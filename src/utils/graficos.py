@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def distribuciones_kde(df, numeric_cols):
+def plot_distribuciones_kde(df, numeric_cols):
 
     n_vars = len(numeric_cols)
     n_cols = 4
@@ -61,7 +61,7 @@ def distribuciones_kde(df, numeric_cols):
     plt.show()
         
 
-def box_plots(df, numeric_cols):
+def plot_box_plots(df, numeric_cols):
     n_vars = len(numeric_cols)
     n_cols = 4
     n_rows = (n_vars + n_cols - 1) // n_cols
@@ -119,7 +119,7 @@ def box_plots(df, numeric_cols):
     plt.tight_layout()
     plt.show()
 
-def violin_plots(df, numeric_cols):
+def plot_violin_plots(df, numeric_cols):
 
     n_vars = len(numeric_cols)
     n_cols = 4
@@ -178,7 +178,61 @@ def violin_plots(df, numeric_cols):
     plt.tight_layout()
     plt.show()
 
-def histograma_variable_binaria(df, column, x_label, y_label, positive_tick, negative_tick, titulo):
+def plot_crosstab_categorica(
+    df,
+    variable,
+    target,
+    titulo=None,
+    xlabel=None,
+    ylabel="Proporción",
+    label_pos="Pagó",
+    label_neg="No pagó",
+    rotation=30
+):
+    
+    # Crosstab normalizado
+    tabla = pd.crosstab(
+        df[variable],
+        df[target],
+        normalize='index'
+    )
+    
+    fig, ax = plt.subplots(figsize=(8,5))
+
+    tabla.plot(
+        kind='bar',
+        stacked=True,
+        color=['#e74c3c', '#2ecc71'],
+        edgecolor='black',
+        ax=ax
+    )
+
+    # Título
+    if titulo is None:
+        titulo = f'Proporción de pago por {variable}'
+    ax.set_title(titulo, fontsize=15, fontweight='bold')
+
+    # Labels
+    ax.set_ylabel(ylabel)
+    ax.set_xlabel(xlabel if xlabel else variable)
+
+    # Leyenda
+    ax.legend([label_neg, label_pos], title='Estado del préstamo')
+
+    # Porcentajes dentro de barras
+    for container in ax.containers:
+        labels = [
+            f"{v.get_height()*100:.1f}%" if v.get_height() > 0 else ""
+            for v in container
+        ]
+        ax.bar_label(container, labels=labels, label_type='center', fontsize=9)
+
+    plt.xticks(rotation=rotation)
+    sns.despine()
+    plt.tight_layout()
+    plt.show()
+
+def plot_hist_variable_binaria(df, column, x_label, y_label, positive_tick, negative_tick, titulo):
     plt.figure(figsize=(8,7))
     ax = sns.countplot(
         x=column,
