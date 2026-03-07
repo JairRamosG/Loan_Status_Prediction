@@ -1,0 +1,7 @@
+Tomar en cuenta los outliers para los prestamos
+
+### REALMENTE NUMERICAS
+
+### REALMENTE CATEGORICAS
+loan_term
+public_records
