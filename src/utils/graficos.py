@@ -118,4 +118,36 @@ def box_plots(df, numeric_cols):
 
     plt.tight_layout()
     plt.show()
-        
+
+def histograma_variable_binaria(df, column, x_label, y_label, positive_tick, negative_tick, titulo):
+    plt.figure(figsize=(8,7))
+    ax = sns.countplot(
+        x=column,
+        data=df,
+        palette=['#e74c3c', '#2ecc71']
+    )
+
+    # Título
+    plt.title(titulo, fontsize=16, fontweight='bold')
+
+    # Etiquetas
+    plt.xlabel(x_label, fontsize=12)
+    plt.ylabel(y_label, fontsize=12)
+
+    # Cambiar etiquetas del eje x
+    ax.set_xticklabels([negative_tick, positive_tick])
+
+    # Agregar valores encima de las barras
+    total = len(df)
+    for p in ax.patches:
+        count = int(p.get_height())
+        percentage = 100 * count / total
+        ax.annotate(f'{count}\n({percentage:.1f}%)',
+                    (p.get_x() + p.get_width()/2, p.get_height()),
+                    ha='center', va='bottom',
+                    fontsize=11)
+
+    sns.despine()
+    plt.tight_layout()
+    plt.show()
+            
