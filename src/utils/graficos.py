@@ -119,6 +119,65 @@ def box_plots(df, numeric_cols):
     plt.tight_layout()
     plt.show()
 
+def violin_plots(df, numeric_cols):
+
+    n_vars = len(numeric_cols)
+    n_cols = 4
+    n_rows = (n_vars + n_cols - 1) // n_cols
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(20, n_rows * 4))
+
+    axes = axes.flatten()
+
+    for idx, col in enumerate(numeric_cols):
+
+        ax = axes[idx]
+
+        # Violin plot
+        sns.violinplot(x=df[col], ax=ax, color='steelblue', inner='quartile')
+
+        # Estadísticas
+        mean_val = df[col].mean()
+        median_val = df[col].median()
+        std_val = df[col].std()
+        skew_val = df[col].skew()
+
+        # Líneas de referencia
+        ax.axvline(mean_val, color='red', linestyle='--', linewidth=2,
+                   label=f"μ={mean_val:.2f}")
+
+        ax.axvline(median_val, color='green', linestyle=':', linewidth=2,
+                   label=f"med={median_val:.2f}")
+
+        # Color del título según skewness
+        if abs(skew_val) > 1:
+            skew_color = 'red'
+        elif abs(skew_val) > 0.5:
+            skew_color = 'orange'
+        else:
+            skew_color = 'green'
+
+        ax.set_title(f'{col}\nskew={skew_val:.2f}',
+                     fontsize=11,
+                     fontweight='bold',
+                     color=skew_color)
+
+        ax.set_xlabel(col)
+        ax.set_ylabel('')
+        ax.legend(fontsize=8)
+        ax.grid(alpha=0.3)
+
+    # Ocultar ejes sobrantes
+    for idx in range(n_vars, len(axes)):
+        axes[idx].set_visible(False)
+
+    plt.suptitle('VIOLIN PLOTS DE TODAS LAS VARIABLES NUMÉRICAS',
+                 fontsize=18,
+                 fontweight='bold')
+
+    plt.tight_layout()
+    plt.show()
+
 def histograma_variable_binaria(df, column, x_label, y_label, positive_tick, negative_tick, titulo):
     plt.figure(figsize=(8,7))
     ax = sns.countplot(
