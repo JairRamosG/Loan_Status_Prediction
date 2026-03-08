@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import math
 
 def plot_distribucion_box(df, numeric_cols, bins=30):
     sns.set_theme(style="whitegrid", palette="deep")
@@ -71,6 +72,71 @@ def plot_distribucion_box(df, numeric_cols, bins=30):
         plt.tight_layout()
         plt.show()
 
+def plot_boxplots_numericas_vs_target(
+    df,
+    numeric_cols,
+    target,
+    cols=2,
+    figsize=None
+):
+
+    sns.set_theme(style="whitegrid")
+
+    n = len(numeric_cols)
+    rows = math.ceil(n / cols)
+
+    if figsize is None:
+        figsize = (14, rows * 3)
+
+    # detectar clases automáticamente
+    clases = sorted(df[target].unique())
+
+    # paleta automática
+    palette = {
+        clases[0]: "#e74c3c",  # rojo
+        clases[-1]: "#55A868"  # verde (igual que tu otra función)
+    }
+
+    fig, axes = plt.subplots(rows, cols, figsize=figsize)
+    axes = axes.flatten()
+
+    for i, col in enumerate(numeric_cols):
+
+        sns.boxplot(
+            data=df,
+            x=col,
+            y=target,
+            hue=target,
+            orient="h",
+            palette=palette,
+            dodge=False,
+            fliersize=3,
+            legend=False,
+            ax=axes[i]
+        )
+
+        axes[i].set_title(
+            f"{col} vs {target}",
+            fontsize=11,
+            fontweight="bold"
+        )
+
+        axes[i].set_xlabel(col)
+        axes[i].set_ylabel(target)
+
+    # eliminar subplots vacíos
+    for j in range(i+1, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.suptitle(
+        f"Distribución de variables numéricas según {target}",
+        fontsize=16,
+        fontweight="bold"
+    )
+
+    plt.tight_layout(rect=[0,0,1,0.97])
+    plt.show()
+
 def plot_distribuciones_kde(df, numeric_cols):
 
     n_vars = len(numeric_cols)
@@ -128,7 +194,7 @@ def plot_distribuciones_kde(df, numeric_cols):
                 fontsize=18, fontweight='bold', y=1.02)
     plt.tight_layout()
     plt.show()
-        
+       
 
 def plot_box_plots(df, numeric_cols):
     n_vars = len(numeric_cols)

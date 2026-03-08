@@ -8,3 +8,5 @@ public_records
 
 
 Muchas categorias en la variable grade_subgrade que se pueden reducir
+
+que hacer con el problmea de multicolinealidad
