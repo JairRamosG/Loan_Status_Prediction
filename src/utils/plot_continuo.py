@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -246,3 +247,39 @@ def plot_violin(df, numeric_cols):
     plt.tight_layout()
     plt.show()
 
+def plot_corr_mat(df, numeric_cols, title="Matriz de correlación entre variables numéricas"):
+
+    sns.set_theme(style="white")
+
+    corr = df[numeric_cols].corr()
+
+    # máscara para ocultar triángulo superior
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+
+    plt.figure(figsize=(12,10))
+
+    sns.heatmap(
+        corr,
+        mask=mask,
+        annot=True,
+        fmt=".2f",
+        cmap="vlag",
+        center=0,
+        linewidths=0.5,
+        square=True,
+        cbar_kws={"shrink": .8},
+        annot_kws={"size":9}
+    )
+
+    plt.title(
+        title,
+        fontsize=16,
+        fontweight="bold",
+        pad=20
+    )
+
+    plt.xticks(rotation=45, ha="right")
+    plt.yticks(rotation=0)
+
+    plt.tight_layout()
+    plt.show()
