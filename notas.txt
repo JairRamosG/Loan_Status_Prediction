@@ -1,4 +1,4 @@
-Tomar en cuenta los outliers para los prestamos
+
 
 ### REALMENTE NUMERICAS
 
@@ -8,5 +8,7 @@ public_records
 
 
 Muchas categorias en la variable grade_subgrade que se pueden reducir
-
+----------------------------------------------------------------------------------------------
 que hacer con el problmea de multicolinealidad
+
+Tomar en cuenta los outliers para los prestamos
