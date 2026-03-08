@@ -2,6 +2,75 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+def plot_distribucion_box(df, numeric_cols, bins=30):
+    
+    sns.set_theme(style="whitegrid", palette="deep")
+    
+    for col in numeric_cols:
+
+        mean_val = df[col].mean()
+        median_val = df[col].median()
+        skew_val = df[col].skew()
+
+        fig, axes = plt.subplots(1, 2, figsize=(14,4))
+
+        # Histograma
+        sns.histplot(
+            df[col],
+            kde=True,
+            bins=bins,
+            color="#4C72B0",
+            edgecolor="black",
+            alpha=0.75,
+            ax=axes[0]
+        )
+
+        # Línea de la media
+        axes[0].axvline(
+            mean_val,
+            color="red",
+            linestyle="--",
+            linewidth=2,
+            label=f"Media = {mean_val:.2f}"
+        )
+
+        # Línea de la mediana
+        axes[0].axvline(
+            median_val,
+            color="green",
+            linestyle="-.",
+            linewidth=2,
+            label=f"Mediana = {median_val:.2f}"
+        )
+
+        axes[0].set_title(f'Distribución de {col}', fontsize=13, fontweight='bold')
+        axes[0].legend()
+
+        # Sesgo
+        axes[0].text(
+            0.95, 0.85,
+            f"Sesgo = {skew_val:.2f}",
+            transform=axes[0].transAxes,
+            ha='right',
+            bbox=dict(facecolor='white', alpha=0.7, edgecolor='gray')
+        )
+
+        # Boxplot
+        sns.boxplot(
+            x=df[col],
+            ax=axes[1],
+            color="#55A868",
+            width=0.5,
+            fliersize=4
+        )
+
+        axes[1].axvline(mean_val, color="red", linestyle="--", linewidth=2)
+        axes[1].set_title(f'Boxplot de {col}', fontsize=13, fontweight='bold')
+
+        plt.suptitle(f'Análisis de {col}', fontsize=15, fontweight='bold')
+        plt.tight_layout()
+        plt.show()
+
 def plot_distribuciones_kde(df, numeric_cols):
 
     n_vars = len(numeric_cols)
@@ -119,7 +188,7 @@ def plot_box_plots(df, numeric_cols):
     plt.tight_layout()
     plt.show()
 
-def plot_violin_plots(df, numeric_cols):
+def plot_violin(df, numeric_cols):
 
     n_vars = len(numeric_cols)
     n_cols = 4
