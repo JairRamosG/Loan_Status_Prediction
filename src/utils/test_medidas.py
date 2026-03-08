@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from tabulate import tabulate
 
 def cohen_ranking(df, target, numeric_cols=None, plot=True):
     
@@ -37,15 +36,12 @@ def cohen_ranking(df, target, numeric_cols=None, plot=True):
     ranking = sorted(resultados.items(), key=lambda x: x[1], reverse=True)
     
     ranking_df = pd.DataFrame(ranking, columns=["Variable", "Cohen_d"])
-    
-    print(tabulate(ranking_df, headers="keys", tablefmt="fancy_grid", showindex=False))
-    
-    if plot:
-        vars_ordenadas = ranking_df["Variable"]
-        d_values = ranking_df["Cohen_d"]
         
+    if plot:
         plt.figure(figsize=(8,6))
-        plt.barh(vars_ordenadas, d_values)
+        plt.barh(ranking_df["Variable"], ranking_df["Cohen_d"])
+        plt.gca().invert_yaxis()
+
         plt.axvline(0.2, color='red', linestyle='--', label='d = 0.2 (bajo)')
         plt.axvline(0.5, color='orange', linestyle='--', label='d = 0.5 (medio)')
         plt.axvline(0.8, color='green', linestyle='--', label='d = 0.8 (alto)')
