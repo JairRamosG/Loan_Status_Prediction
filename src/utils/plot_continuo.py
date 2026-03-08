@@ -3,7 +3,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 def plot_distribucion_box(df, numeric_cols, bins=30):
-    
     sns.set_theme(style="whitegrid", palette="deep")
     
     for col in numeric_cols:

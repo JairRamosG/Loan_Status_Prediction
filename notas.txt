@@ -5,3 +5,6 @@ Tomar en cuenta los outliers para los prestamos
 ### REALMENTE CATEGORICAS
 loan_term
 public_records
+
+
+Muchas categorias en la variable grade_subgrade que se pueden reducir

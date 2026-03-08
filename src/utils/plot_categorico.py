@@ -4,28 +4,36 @@ import matplotlib.pyplot as plt
 
 import seaborn as sns
 import matplotlib.pyplot as plt
+import math
 
-def plot_categorical_frequencies(df, categoric_cols, show_percentage=False):
+def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False):
 
     sns.set_theme(style="whitegrid")
 
-    for col in categoric_cols:
+    n = len(categoric_cols)
+    cols = 2
+    rows = math.ceil(n / cols)
 
-        plt.figure(figsize=(10,4))
+    fig, axes = plt.subplots(rows, cols, figsize=(14, rows * 4))
+    axes = axes.flatten()
+
+    total = len(df)
+
+    for i, col in enumerate(categoric_cols):
 
         orden = df[col].value_counts().index
 
         ax = sns.countplot(
-            y=col,
-            data=df,
-            order=orden,
-            palette="viridis",
-            edgecolor="black"
+            y = col,
+            data = df,
+            order = orden,
+            hue = col,
+            palette = "viridis",
+            edgecolor = "black",
+            legend = False,
+            ax = axes[i]
         )
 
-        total = len(df)
-
-        # agregar valores en las barras
         for p in ax.patches:
 
             width = p.get_width()
@@ -37,19 +45,20 @@ def plot_categorical_frequencies(df, categoric_cols, show_percentage=False):
             else:
                 texto = f'{int(width)}'
 
-            ax.text(
-                width + 0.5,
-                y,
-                texto,
-                va='center'
-            )
+            ax.text(width + 0.5, y, texto, va='center')
 
-        plt.title(f'Frecuencia de {col}', fontsize=14, fontweight="bold")
-        plt.xlabel("Frecuencia")
-        plt.ylabel(col)
+        axes[i].set_title(f'Frecuencia de {col}', fontsize=13, fontweight="bold")
+        axes[i].set_xlabel("Frecuencia")
+        axes[i].set_ylabel(col)
 
-        plt.tight_layout()
-        plt.show()
+    # eliminar ejes vacíos si hay
+    for j in range(i+1, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.suptitle("Distribución de Variables Categóricas", fontsize=16, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+
 
 def plot_crosstab_categorica(
     df,
@@ -104,6 +113,60 @@ def plot_crosstab_categorica(
     sns.despine()
     plt.tight_layout()
     plt.show()
+
+def plot_kde_por_clase(df, numeric_cols, target):
+    sns.set_theme(style="whitegrid")
+
+    n = len(numeric_cols)
+    cols = 2
+    rows = math.ceil(n / cols)
+
+    fig, axes = plt.subplots(rows, cols, figsize=(15, rows*4))
+    axes = axes.flatten()
+
+    colores_medias = {
+        0: "#d62728",
+        1: "#1f77b4"
+    }
+
+    for i, col in enumerate(numeric_cols):
+
+        ax = sns.kdeplot(
+            data=df,
+            x=col,
+            hue=target,
+            fill=True,
+            common_norm=False,
+            alpha=0.35,
+            linewidth=2,
+            palette="Set2",
+            ax=axes[i]
+        )
+
+        for clase, color in colores_medias.items():
+
+            mean_val = df[df[target] == clase][col].mean()
+
+            axes[i].axvline(
+                mean_val,
+                linestyle="--",
+                linewidth=3,
+                color=color,
+                label=f"Media clase {clase}: {mean_val:.2f}"
+            )
+
+        axes[i].set_title(f'Distribución de {col} por clase', fontsize=12, fontweight="bold")
+        axes[i].set_xlabel(col)
+        axes[i].set_ylabel("Densidad")
+
+    # eliminar ejes vacíos
+    for j in range(i+1, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.suptitle("Distribución de Variables Numéricas por Clase", fontsize=16, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+
 
 def plot_hist_variable_binaria(df, column, x_label, y_label, positive_tick, negative_tick, titulo):
     plt.figure(figsize=(8,7))
