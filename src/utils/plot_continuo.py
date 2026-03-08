@@ -42,7 +42,7 @@ def plot_distribucion_box(df, numeric_cols, bins=30):
             label=f"Mediana = {median_val:.2f}"
         )
 
-        axes[0].set_title(f'Distribución de {col}', fontsize=13, fontweight='bold')
+        axes[0].set_title(f'Distribución de {col}\n', fontsize=13, fontweight='bold')
         axes[0].legend()
 
         # Sesgo

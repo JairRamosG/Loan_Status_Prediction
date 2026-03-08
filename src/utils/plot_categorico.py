@@ -60,68 +60,94 @@ def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False):
     plt.show()
 
 
-def plot_crosstab_categorica(
+def plot_crosstab_categoricas(
     df,
-    variable,
+    categoric_cols,
     target,
-    titulo=None,
-    xlabel=None,
     ylabel="Proporción",
     label_pos="Pagó",
     label_neg="No pagó",
     rotation=30
 ):
-    
-    # Crosstab normalizado
-    tabla = pd.crosstab(
-        df[variable],
-        df[target],
-        normalize='index'
+
+    sns.set_theme(style="whitegrid")
+
+    n = len(categoric_cols)
+    cols = 2
+    rows = math.ceil(n / cols)
+
+    fig, axes = plt.subplots(rows, cols, figsize=(14, rows*4))
+    axes = axes.flatten()
+
+    for i, variable in enumerate(categoric_cols):
+
+        tabla = pd.crosstab(
+            df[variable],
+            df[target],
+            normalize="index"
+        )
+
+        tabla.plot(
+            kind="bar",
+            stacked=True,
+            color=["#e74c3c", "#2ecc71"],
+            edgecolor="black",
+            ax=axes[i]
+        )
+
+        axes[i].set_title(
+            f'Proporción de pago por {variable}',
+            fontsize=13,
+            fontweight="bold"
+        )
+
+        axes[i].set_ylabel(ylabel)
+        axes[i].set_xlabel(variable)
+
+        axes[i].legend(
+            [label_neg, label_pos],
+            title="Estado del préstamo"
+        )
+
+        # etiquetas de porcentaje
+        for container in axes[i].containers:
+            labels = [
+                f"{v.get_height()*100:.1f}%" if v.get_height() > 0 else ""
+                for v in container
+            ]
+            axes[i].bar_label(
+                container,
+                labels=labels,
+                label_type="center",
+                fontsize=9
+            )
+
+        axes[i].tick_params(axis="x", rotation=rotation)
+
+    # eliminar subplots vacíos
+    for j in range(i+1, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.suptitle(
+        "Proporción de Pago del Préstamo por Variables Categóricas",
+        fontsize=16,
+        fontweight="bold"
     )
-    
-    fig, ax = plt.subplots(figsize=(8,5))
 
-    tabla.plot(
-        kind='bar',
-        stacked=True,
-        color=['#e74c3c', '#2ecc71'],
-        edgecolor='black',
-        ax=ax
-    )
-
-    # Título
-    if titulo is None:
-        titulo = f'Proporción de pago por {variable}'
-    ax.set_title(titulo, fontsize=15, fontweight='bold')
-
-    # Labels
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel(xlabel if xlabel else variable)
-
-    # Leyenda
-    ax.legend([label_neg, label_pos], title='Estado del préstamo')
-
-    # Porcentajes dentro de barras
-    for container in ax.containers:
-        labels = [
-            f"{v.get_height()*100:.1f}%" if v.get_height() > 0 else ""
-            for v in container
-        ]
-        ax.bar_label(container, labels=labels, label_type='center', fontsize=9)
-
-    plt.xticks(rotation=rotation)
+    plt.tight_layout(rect=[0,0,1,0.96])
     sns.despine()
-    plt.tight_layout()
     plt.show()
 
+
 def plot_kde_por_clase(df, numeric_cols, target):
+
     sns.set_theme(style="whitegrid")
 
     n = len(numeric_cols)
     cols = 2
     rows = math.ceil(n / cols)
 
-    fig, axes = plt.subplots(rows, cols, figsize=(15, rows*4))
+    fig, axes = plt.subplots(rows, cols, figsize=(14, rows*4))
     axes = axes.flatten()
 
     colores_medias = {
@@ -131,7 +157,7 @@ def plot_kde_por_clase(df, numeric_cols, target):
 
     for i, col in enumerate(numeric_cols):
 
-        ax = sns.kdeplot(
+        sns.kdeplot(
             data=df,
             x=col,
             hue=target,
@@ -163,8 +189,14 @@ def plot_kde_por_clase(df, numeric_cols, target):
     for j in range(i+1, len(axes)):
         fig.delaxes(axes[j])
 
-    plt.suptitle("Distribución de Variables Numéricas por Clase", fontsize=16, fontweight="bold")
-    plt.tight_layout()
+    plt.suptitle(
+        "Distribución de Variables Numéricas por Clase",
+        fontsize=16,
+        fontweight="bold",
+        y=0.99
+    )
+
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     plt.show()
 
 
