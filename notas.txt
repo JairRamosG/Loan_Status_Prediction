@@ -12,3 +12,31 @@ Muchas categorias en la variable grade_subgrade que se pueden reducir
 que hacer con el problmea de multicolinealidad
 
 Tomar en cuenta los outliers para los prestamos
+
+========================== FEATURE ENGINEERING ================================
+
+Variables numéricas:
+
+    - Discretizar:
+      'age' - Pasar a 5 grupos de edades y despues ordinal encoding
+
+    - Transformación logaritmica (variable / sesgo):
+        * annual_income (2.33)
+        * monthly_income (2.33)
+        * debt_to_income_ratio (0.79)
+        * total_credit_limit (2.49)
+        * current balance (2.79)
+        * delinquency_history (0.83)
+
+Variables categóricas:
+
+    - Ordinales
+        * education_level - ordinal encoding(5 categorias)
+        * grade_subgrade - (reducir de 30 a 5 categorias y despues un ordinal encoding)
+
+    - Nominales
+        * gender - OHE (hay una categoria con solo 2.1% y las otras 2 cerca del 50%)
+        * marital status - OHE
+        * employment_status - Frecuency encoding (5 categorias)
+        * loan_purpose - Frecuency encoding (8 categorias)
+        * loan_term - OHE (2 categorias drop first = true)
