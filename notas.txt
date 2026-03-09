@@ -1,11 +1,4 @@
-
-
-### REALMENTE NUMERICAS
-
-### REALMENTE CATEGORICAS
-loan_term
-public_records
-
+========================== EDA ================================
 
 Muchas categorias en la variable grade_subgrade que se pueden reducir
 ----------------------------------------------------------------------------------------------
@@ -33,7 +26,8 @@ Variables categóricas:
     - Ordinales
         * education_level - ordinal encoding(5 categorias)
         * grade_subgrade - (reducir de 30 a 5 categorias y despues un ordinal encoding)
-
+        * age_group
+        
     - Nominales
         * gender - OHE (hay una categoria con solo 2.1% y las otras 2 cerca del 50%)
         * marital status - OHE
