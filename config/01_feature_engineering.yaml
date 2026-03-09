@@ -13,4 +13,5 @@ seed: 42
 #VALIDACIÓN
 data_split:
   test_size: 0.2
-  stratify: true
+  train_set: 'train.csv'
+  test_set: 'test.csv'
