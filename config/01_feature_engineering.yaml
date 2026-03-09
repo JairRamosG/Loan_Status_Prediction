@@ -1,0 +1,8 @@
+# --- LOAN_STATUS_PREDICTION ---
+# config/01_feature_engineering.yaml
+
+# NOMBRE EXPERIMENTO
+experiment_name: 'EXP_01'
+
+# VARIABLE OBJETIVO
+target_variable: 'loan_paid_back'
