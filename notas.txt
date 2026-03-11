@@ -34,3 +34,20 @@ Variables categóricas:
         * employment_status - Frecuency encoding (5 categorias)
         * loan_purpose - Frecuency encoding (8 categorias)
         * loan_term - OHE (2 categorias drop first = true)
+
+>>>>>>>> Creación de Variables para encontrar mas relaciones en los datos
+-- Financiera
+log_loan_to_income = log(loan_amount) - log(annual_income)
+Carga del préstamo respecto al ingreso anual
+
+-- Incumplimiento
+has_delincuency = delinquency_history > 0
+Binaria para saber si ya tuvo incumplimientos alguna vez
+
+severity_score = num_of_delinquencies + public_records
+combinar numero de delincuencias con registros public_records
+
+-- Pagos
+payment_income = installment / monthly_income
+
+
