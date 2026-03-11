@@ -15,5 +15,7 @@ data_split:
   test_size: 0.2
   train_set_pre: '01_train.csv'
   test_set_pre: '01_test.csv'
-  train_set_post: '02_train.csv'
-  test_set_post: '02_test.csv'
+
+final_train:
+  train_set_post: '01_train.csv'
+
