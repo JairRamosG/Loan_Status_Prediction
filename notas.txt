@@ -50,4 +50,6 @@ combinar numero de delincuencias con registros public_records
 -- Pagos
 payment_income = installment / monthly_income
 
+por que education_level y age_group es numerica y no categorica?
 
+que me dice la frecuencia muy dispareja de una variable categorica respecto a la variable objetivo?
