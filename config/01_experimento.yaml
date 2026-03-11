@@ -1,5 +1,5 @@
 # --- LOAN_STATUS_PREDICTION ---
-# config/01_feature_engineering.yaml
+# config/01_experimento.yaml
 
 # NOMBRE EXPERIMENTO
 experiment_name: 'EXP_01'
