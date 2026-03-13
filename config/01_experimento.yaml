@@ -19,3 +19,9 @@ data_split:
 final_train:
   train_set_post: '01_train.csv'
 
+# FEATURE SELECTION
+random_forest:
+  n_estimators: 500
+  max_leaf_nodes: 16
+  n_jobs: -1
+
