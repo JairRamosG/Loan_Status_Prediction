@@ -53,3 +53,12 @@ payment_income = installment / monthly_income
 por que education_level y age_group es numerica y no categorica?
 
 que me dice la frecuencia muy dispareja de una variable categorica respecto a la variable objetivo?
+
+
+========================== FEATURE SELECTION ================================
+
+Cuando estoy en el Feature Importance e identifico cuales con las variables que proporcionan 
+una mayor separabilidad con la variable objetivo con el
+feature_importances_ de un random forest, tengo que hacer una eliminacion
+de variables tomando en cuenta la matriz de correlación para
+evitar la multicolinealidad?
