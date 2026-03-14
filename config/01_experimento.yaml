@@ -1,16 +1,19 @@
 # --- LOAN_STATUS_PREDICTION ---
 # config/01_experimento.yaml
 
-# NOMBRE EXPERIMENTO
+
+####### EDA
+
+# Nombre experimento
 experiment_name: 'EXP_01'
 
-# VARIABLE OBJETIVO
+# Variable objetivo
 target_variable: 'loan_paid_back'
 
-# SEMILLA
+# Semilla
 seed: 42
 
-#VALIDACIÓN
+# Validación
 data_split:
   test_size: 0.2
   train_set_pre: '01_train.csv'
@@ -19,7 +22,7 @@ data_split:
 final_train:
   train_set_post: '01_train.csv'
 
-# FEATURE SELECTION
+####### FEATURE SELECTION
 log_reg:
   solver: 'saga'
   max_iter: 1000
@@ -31,4 +34,42 @@ random_forest:
   n_estimators: 500
   max_leaf_nodes: 16
   n_jobs: -1
+
+######## TRAIN
+
+# Definición de columnas
+columnas:
+
+  # Columnas que se IGNORAN 
+  ignorar:
+    - 'PatientID'
+    - 'Last_Interaction_Date'
+  
+  # Columnas NUMÉRICAS 
+  numericas:
+    - 'Age'
+    - 'Visits_Last_Year'
+    - 'Missed_Appointments'
+    - 'Avg_Out_Of_Pocket_Cost'
+  
+  # Columnas ORDINALES 
+  ordinales:
+    - 'Referrals_Made'
+  
+  # Columnas NOMINALES con OneHotEncoding (drop first)
+  nominales_ohe_drop:
+    - 'Gender'
+    - 'Billing_Issues'
+    - 'Portal_Usage'
+  
+  # Columnas NOMINALES con OneHotEncoding normal
+  nominales_ohe:
+    - 'Insurance_Type'
+  
+  # Columnas NOMINALES con Frequency Encoding (alta cardinalidad)
+  nominales_frecuencia:
+    - 'State'
+    - 'Specialty'
+
+
 
