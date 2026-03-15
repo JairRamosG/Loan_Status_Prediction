@@ -1,5 +1,6 @@
 from pathlib import Path
 import yaml
+import os
 
 def train_model(config_file):
     '''
@@ -21,6 +22,18 @@ def train_model(config_file):
     cat_nom_frec_cols = columnas_config.get('cat_nom_frec', [])
 
     print(num_cols)
+
+    # Rutas del archivo de datos, ruta del modelo, metadata y lgs
+    DATA_FILE = Path(os.getenv('DATA_FILE', BASE_DIR / 'data' / 'raw' / 'loan_dataset_20000.csv'))
+    MODEL_DIR = Path(os.getenv('MODEL_DIR', BASE_DIR / 'models'))
+    METADATA_DIR = Path(os.getenv('METADATA_DIR', BASE_DIR / 'metadata'))
+    LOGS_DIR = Path(os.getenv('LOGS_DIR', BASE_DIR / 'logs'))
+
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    METADATA_DIR.mkdir(parents=True, exist_ok=True)
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+
+
     pass
 
 if __name__ == "__main__":
