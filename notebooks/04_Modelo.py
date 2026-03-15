@@ -1,6 +1,7 @@
 from pathlib import Path
 import yaml
 import os
+import logging
 
 def train_model(config_file):
     '''
@@ -21,8 +22,6 @@ def train_model(config_file):
     cat_nom_ohe_cols = columnas_config.get('cat_nom_ohe', [])
     cat_nom_frec_cols = columnas_config.get('cat_nom_frec', [])
 
-    print(num_cols)
-
     # Rutas del archivo de datos, ruta del modelo, metadata y lgs
     DATA_FILE = Path(os.getenv('DATA_FILE', BASE_DIR / 'data' / 'raw' / 'loan_dataset_20000.csv'))
     MODEL_DIR = Path(os.getenv('MODEL_DIR', BASE_DIR / 'models'))
@@ -33,12 +32,20 @@ def train_model(config_file):
     METADATA_DIR.mkdir(parents=True, exist_ok=True)
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Configurar un archivo para hacer unos loggings
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    handler = logging.FileHandler(LOGS_DIR / config['log_file'])
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    logger.addHandler(handler)
+
+    print(type(logger))
 
     pass
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent.parent
     CONFIG_FILE = BASE_DIR / 'config' / '01_experimento.yaml'
-    print(CONFIG_FILE)
     train_model(str(CONFIG_FILE))
 

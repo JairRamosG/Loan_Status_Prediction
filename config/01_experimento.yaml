@@ -37,7 +37,9 @@ random_forest:
 
 ######## TRAIN
 
-# Definición de columnas
+# logger
+log_file : 'EXP_01'
+
 # Definición de columnas
 columnas:
   ignorar: []
