@@ -2,6 +2,9 @@ from pathlib import Path
 import yaml
 import os
 import logging
+import random
+
+import numpy as np
 
 def train_model(config_file):
     '''
@@ -40,8 +43,14 @@ def train_model(config_file):
     handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
     logger.addHandler(handler)
 
-    print(type(logger))
+    # Establecer las semillas para trazabilidad
+    seed = config['seed']
+    random.seed(seed)
+    np.random.seed(seed)
 
+
+
+    print(seed)
     pass
 
 if __name__ == "__main__":
