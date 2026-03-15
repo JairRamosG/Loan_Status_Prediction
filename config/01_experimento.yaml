@@ -38,38 +38,38 @@ random_forest:
 ######## TRAIN
 
 # Definición de columnas
+# Definición de columnas
 columnas:
+  ignorar: []
 
-  # Columnas que se IGNORAN 
-  ignorar:
-    - 'PatientID'
-    - 'Last_Interaction_Date'
-  
-  # Columnas NUMÉRICAS 
-  numericas:
-    - 'Age'
-    - 'Visits_Last_Year'
-    - 'Missed_Appointments'
-    - 'Avg_Out_Of_Pocket_Cost'
-  
-  # Columnas ORDINALES 
-  ordinales:
-    - 'Referrals_Made'
-  
-  # Columnas NOMINALES con OneHotEncoding (drop first)
-  nominales_ohe_drop:
-    - 'Gender'
-    - 'Billing_Issues'
-    - 'Portal_Usage'
-  
-  # Columnas NOMINALES con OneHotEncoding normal
-  nominales_ohe:
-    - 'Insurance_Type'
-  
-  # Columnas NOMINALES con Frequency Encoding (alta cardinalidad)
-  nominales_frecuencia:
-    - 'State'
-    - 'Specialty'
+  num:
+    - 'credit_score'
+    - 'debt_to_income_ratio'
+    - 'num_of_delinquencies'
+    - 'monthly_income'
+    - 'current_balance'
+    - 'age'
+    - 'annual_income'
+    - 'interest_rate'
+    - 'loan_amount'
+    - 'loan_to_income'
+    - 'num_of_open_accounts'
+    - 'total_credit_limit'
+    - 'installment'         
+    - 'sevetity_score'       
+    - 'payment_income'
 
+  cat_ord:
+    - 'education_level'      
+    - 'grade_subgrade'       
+    - 'age_group'           
 
+  cat_nom_ohe_drop:
+    - 'gender'               
+    - 'marital_status'      
+    - 'loan_term'            
+    - 'employment_status'   
 
+  cat_nom_ohe: []
+
+  cat_nom_frec: []
