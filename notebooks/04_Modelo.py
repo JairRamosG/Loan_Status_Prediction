@@ -5,6 +5,7 @@ import logging
 import random
 
 import numpy as np
+import pandas as pd
 
 def train_model(config_file):
     '''
@@ -48,9 +49,21 @@ def train_model(config_file):
     random.seed(seed)
     np.random.seed(seed)
 
+    # Cargar los datos para trabajarlos
+    logger.info(f"Iniciando con el experimento {str(config['experiment_name'])}")
+    if not DATA_FILE.exists():
+        logger.error(f'Archivo no encontrado en: {DATA_FILE}')
+        raise FileNotFoundError('No existen los datos')
 
+    data = pd.read_csv(DATA_FILE)
+    logger.info("Datos cargados correctamente")
 
-    print(seed)
+    # Validación de los datos cargados
+    if data.empty:
+        logger.warning("El archivo de datos está vacío")
+        raise ValueError("Datos vacíos")
+    
+    print(type(data))
     pass
 
 if __name__ == "__main__":
