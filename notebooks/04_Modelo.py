@@ -7,6 +7,8 @@ import random
 import numpy as np
 import pandas as pd
 
+from sklearn.model_selection import train_test_split
+
 def train_model(config_file):
     '''
     FUnción principal que hace el entrenamiento del modelo.
@@ -17,6 +19,7 @@ def train_model(config_file):
     with open(config_file) as f:
         config = yaml.safe_load(f)
     
+    target_variable = config['target_variable']
     columnas_config = config.get('columnas', [])
     # Lista de columnas establecidas en el archivo de configuración
     ignorar_cols = columnas_config.get('ignorar', [])
@@ -63,7 +66,38 @@ def train_model(config_file):
         logger.warning("El archivo de datos está vacío")
         raise ValueError("Datos vacíos")
     
-    print(type(data))
+    # Validar que las columnas son las esperadas que se van a usar
+    required_cols = (
+        [target_variable]+
+        ignorar_cols+
+        num_cols+
+        cat_ord_cols+
+        cat_nom_ohe_drop_cols+
+        cat_nom_ohe_cols+ 
+        cat_nom_frec_cols)
+    
+    faltantes = [col for col in required_cols if col not in data.columns]
+    if faltantes:
+        logger.error(f'Faltan columnas en los datos a trabajar: {faltantes}')
+        raise ValueError(f'Faltan columnas: {faltantes}')
+    logger.info("Todas las columnas están presentes")
+
+    # Validación del conjunto de datos
+    X = data.drop(columns=[target_variable])
+    y = data[target_variable]
+
+    val_config = config.get('data_split', [])
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size= val_config.get('test_size', 0.2),
+        random_state= seed,
+        stratify= y)
+    
+    print(X_train.shape)
+    print(X_test.shape)
+    print(y_train.shape)
+    print(y_test.shape)
     pass
 
 if __name__ == "__main__":

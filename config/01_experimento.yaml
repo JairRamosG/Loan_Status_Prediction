@@ -54,17 +54,13 @@ columnas:
     - 'annual_income'
     - 'interest_rate'
     - 'loan_amount'
-    - 'loan_to_income'
     - 'num_of_open_accounts'
     - 'total_credit_limit'
-    - 'installment'         
-    - 'sevetity_score'       
-    - 'payment_income'
+    - 'installment'               
 
   cat_ord:
     - 'education_level'      
-    - 'grade_subgrade'       
-    - 'age_group'           
+    - 'grade_subgrade'                 
 
   cat_nom_ohe_drop:
     - 'gender'               
