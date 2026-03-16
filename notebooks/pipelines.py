@@ -1,5 +1,7 @@
 from sklearn.compose import ColumnTransformer
 from imblearn.pipeline import Pipeline
+from utils import FeatureEngineering
+from imblearn.over_sampling import SMOTE
 
 def build_preprocessor(columnas_config, preprocessor_config):
     """
@@ -52,13 +54,28 @@ def build_full_pipeline(config, seed):
     if feature_engineering_config.get('create_age_group', False):
         columnas_config['cat_ord'] = columnas_config.get('cat_ord', []) + ['age_group']
     
-    if feature_engineering_config.get('loan_to_income', False):
+    if feature_engineering_config.get('create_loan_to_income', False):
         columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['loan_to_income']
 
+    if feature_engineering_config.get('create_has_delinquency_story', False):
+        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['has_delinquency_story']
     
+    if feature_engineering_config.get('create_severity_score', False):
+        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['severity_score']
+
+    if feature_engineering_config.get('create_payment_income', False):
+        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['payment_income']
 
     # Construcción de los componentes del pipeline
     preprocessor = build_preprocessor(columnas_config, preprocessor_config)
     model = build_model(models_config, seed)
+
+    # Ensablo el pipeline para tratar los datos y entrenar el modelo
+    pipeline = Pipeline([
+        ('feature_engineering',  FeatureEngineering(**feature_engineering_config)),
+        ('preprocessor', preprocessor),
+        ('smote', SMOTE(**smote_config)),
+        ('model', model)
+    ])
 
     

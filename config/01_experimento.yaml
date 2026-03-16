@@ -115,7 +115,7 @@ feature_engineering:
   age_bins: [20, 29, 35, 40, 50, 75]          # nombre corregido
   age_labels: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']  # corregido
   create_loan_to_income: True
-  create_delinquency_flags: True
+  create_has_delinquency_story: True #
   create_severity_score: True
   create_payment_income: True
 ######## PREPROCESSING
