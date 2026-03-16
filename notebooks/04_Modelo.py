@@ -19,15 +19,15 @@ def train_model(config_file):
     with open(config_file) as f:
         config = yaml.safe_load(f)
     
-    target_variable = config['target_variable']
+    TARGET_VARIABLE = config['target_variable']
     columnas_config = config.get('columnas', [])
     # Lista de columnas establecidas en el archivo de configuración
-    ignorar_cols = columnas_config.get('ignorar', [])
-    num_cols = columnas_config.get('num', [])
-    cat_ord_cols = columnas_config.get('cat_ord', [])
-    cat_nom_ohe_drop_cols = columnas_config.get('cat_nom_ohe_drop', [])
-    cat_nom_ohe_cols = columnas_config.get('cat_nom_ohe', [])
-    cat_nom_frec_cols = columnas_config.get('cat_nom_frec', [])
+    IGNORAR_COLS = columnas_config.get('ignorar', [])
+    NUM_COLS = columnas_config.get('num', [])
+    CAT_ORD_COLS = columnas_config.get('cat_ord', [])
+    CAT_NOM_OHE_DROP_COLS = columnas_config.get('cat_nom_ohe_drop', [])
+    CAT_NOM_OHE_COLS = columnas_config.get('cat_nom_ohe', [])
+    CAT_NOM_OHE_FREC_COLS = columnas_config.get('cat_nom_frec', [])
 
     # Rutas del archivo de datos, ruta del modelo, metadata y lgs
     DATA_FILE = Path(os.getenv('DATA_FILE', BASE_DIR / 'data' / 'raw' / 'loan_dataset_20000.csv'))
@@ -68,13 +68,13 @@ def train_model(config_file):
     
     # Validar que las columnas son las esperadas que se van a usar
     required_cols = (
-        [target_variable]+
-        ignorar_cols+
-        num_cols+
-        cat_ord_cols+
-        cat_nom_ohe_drop_cols+
-        cat_nom_ohe_cols+ 
-        cat_nom_frec_cols)
+        [TARGET_VARIABLE]+
+        IGNORAR_COLS+
+        NUM_COLS+
+        CAT_ORD_COLS+
+        CAT_NOM_OHE_DROP_COLS+
+        CAT_NOM_OHE_COLS+
+        CAT_NOM_OHE_FREC_COLS)
     
     faltantes = [col for col in required_cols if col not in data.columns]
     if faltantes:
@@ -83,8 +83,8 @@ def train_model(config_file):
     logger.info("Todas las columnas están presentes")
 
     # Validación del conjunto de datos
-    X = data.drop(columns=[target_variable])
-    y = data[target_variable]
+    X = data.drop(columns=[TARGET_VARIABLE])
+    y = data[TARGET_VARIABLE]
 
     val_config = config.get('data_split', [])
     X_train, X_test, y_train, y_test = train_test_split(
@@ -93,6 +93,19 @@ def train_model(config_file):
         test_size= val_config.get('test_size', 0.2),
         random_state= seed,
         stratify= y)
+    logger.info("Validación del conjunto de datos realizada")
+    logger.info(f" X_train: {X_train.shape}")
+    logger.info(f" X_test : {X_test.shape}")
+    logger.info(f" y_train: {y_train.shape}")
+    logger.info(f" y_test : {y_test.shape}")
+
+    # Identificacion de las columnas
+    ignorar_cols = IGNORAR_COLS.copy()
+    num_cols = NUM_COLS.copy()
+    cat_ord_cols = CAT_ORD_COLS.copy()
+    cat_nom_ohe_drop_cols = CAT_NOM_OHE_DROP_COLS.copy()
+    cat_nom_ohe_cols = CAT_NOM_OHE_COLS.copy()
+    cat_nom_ohe_frec_cols = CAT_NOM_OHE_FREC_COLS.copy()
     
     print(X_train.shape)
     print(X_test.shape)
