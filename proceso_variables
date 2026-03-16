@@ -1,31 +1,29 @@
 VARIABLES ORIGINALES Y SU TRATAMIENTO
                    age * NUM     -> Discretizar
-                gender * CAT_NO  -> Encoding + OHE        
+                gender * CAT_NOM -> Encoding + OHE        
         marital_status * CAT_NOM -> Encoding + OHE     
-       education_level * CAT_ORD -> Encoding    
-         annual_income * NUM     -> Normalizar
-        monthly_income * NUM     -> Normalizar
+       education_level * CAT_ORD -> Ord Encoding    
+         annual_income * NUM     -> log + Normalizar
+        monthly_income * NUM     -> log + Normalizar
      employment_status * CAT_NOM -> Encoding + OHE 
-  debt_to_income_ratio * NUM     -> Normalizar
+  debt_to_income_ratio * NUM     -> log + Normalizar
           credit_score * NUM     -> Normalizar
            loan_amount * NUM     -> Normalizar    
           loan_purpose * CAT_NOM -> Encoding + OHE        
          interest_rate * NUM     -> Normalizar
              loan_term * CAT_NOM -> OHE + dropfirst = True        
            installment * NUM     -> Normalizar   
-        grade_subgrade * CAT_ORD -> Encoding + OHE       
+        grade_subgrade * CAT_ORD -> Ord Encoding        
   num_of_open_accounts * NUM     -> Normalizar
-    total_credit_limit * NUM     -> Normalizar
-       current_balance * NUM     -> Normalizar
-   delinquency_history * NUM     -> Normalizar
+    total_credit_limit * NUM     -> log + Normalizar
+       current_balance * NUM     -> log + Normalizar
+   delinquency_history * NUM     -> log1p + Normalizar
         public_records * NUM     -> Normalizar 
   num_of_delinquencies * NUM     -> Normalizar
         loan_paid_back * NUM(BIN) OBJETIVO  
 
-*NUM -> Log + Distretizar si skew > 0.75  
-
 VARIABLES FINALES Y SU FORMATO FINAL
-                              age *  NUM
+                              age * NUM X eliminar
                         age_group * CAT_ORD
           marital_status_Divorced * NUM(BIN)
            marital_status_Widowed * NUM(BIN)
