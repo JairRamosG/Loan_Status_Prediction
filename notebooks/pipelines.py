@@ -10,7 +10,7 @@ def build_preprocessor(columnas_config, preprocessor_config):
         preprocessor_config (dict): Parte correspondiente de variables del preprocesamiento 
     """
 
-    # Extraer las columnas originales
+    # Columnas nuevas de ingenieria de características
     ignorar_cols = columnas_config.get('ignorar', [])
     num_cols = columnas_config.get('num_cols', [])
     cat_ord_cols = columnas_config.get('cat_ord_cols', [])
@@ -22,7 +22,6 @@ def build_preprocessor(columnas_config, preprocessor_config):
     num_cols_processing = Pipeline([
         ()
     ])
-
 
     # Pipeline para datos categóricos ordinales
 

@@ -81,9 +81,11 @@ columnas:
 feature_engineering:
   bins : [20, 29, 35, 40, 50, 75]
   labels : ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
+  # falta poner de todas las demás
+
 
 ######## PREPROCESSING
-
+tengo que escribir aqui lo ya trabajado
 ######## SMOTE
 
 ######## MODELS

@@ -62,3 +62,24 @@ una mayor separabilidad con la variable objetivo con el
 feature_importances_ de un random forest, tengo que hacer una eliminacion
 de variables tomando en cuenta la matriz de correlación para
 evitar la multicolinealidad?
+
+========================== class Feature_Engineering ================================
+
+
+Exactamente, tienes razón: feature engineering y preprocessing son etapas distintas y 
+deben mantenerse separadas en el pipeline. La función de FeatureEngineering es crear
+ nuevas variables a partir de las originales, mientras que preprocessor 
+ (el ColumnTransformer) se encarga de transformar (escalar, codificar, etc.) 
+ tanto las originales como las nuevas.
+
+En tu configuración YAML, lo que definas en preprocessing (como ordinal_categories)
+aplica a las columnas después de que FeatureEngineering las haya creado. Por lo tanto:
+
+* Las nuevas variables (loan_to_income, has_delinquency_history, severity_score,
+payment_income, y opcionalmente age_group) deben generarse en la 
+clase FeatureEngineering.
+
+*En el preprocessor, esas nuevas variables deben ser tratadas según su tipo: 
+las numéricas pueden escalarse (si configuras scale_numeric: true) o 
+simplemente pasarse sin cambios; las ordinales como age_group deben 
+codificarse con OrdinalEncoder y sus categorías definidas en ordinal_categories.
