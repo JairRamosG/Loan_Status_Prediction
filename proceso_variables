@@ -1,0 +1,93 @@
+VARIABLES ORIGINALES Y SU TRATAMIENTO
+                   age * NUM     -> Discretizar
+                gender * CAT_NO  -> Encoding + OHE        
+        marital_status * CAT_NOM -> Encoding + OHE     
+       education_level * CAT_ORD -> Encoding    
+         annual_income * NUM     -> Normalizar
+        monthly_income * NUM     -> Normalizar
+     employment_status * CAT_NOM -> Encoding + OHE 
+  debt_to_income_ratio * NUM     -> Normalizar
+          credit_score * NUM     -> Normalizar
+           loan_amount * NUM     -> Normalizar    
+          loan_purpose * CAT_NOM -> Encoding + OHE        
+         interest_rate * NUM     -> Normalizar
+             loan_term * CAT_NOM -> OHE + dropfirst = True        
+           installment * NUM     -> Normalizar   
+        grade_subgrade * CAT_ORD -> Encoding + OHE       
+  num_of_open_accounts * NUM     -> Normalizar
+    total_credit_limit * NUM     -> Normalizar
+       current_balance * NUM     -> Normalizar
+   delinquency_history * NUM     -> Normalizar
+        public_records * NUM     -> Normalizar 
+  num_of_delinquencies * NUM     -> Normalizar
+        loan_paid_back * NUM(BIN) OBJETIVO  
+
+*NUM -> Log + Distretizar si skew > 0.75  
+
+VARIABLES FINALES Y SU FORMATO FINAL
+                              age *  NUM
+                        age_group * CAT_ORD
+          marital_status_Divorced * NUM(BIN)
+           marital_status_Widowed * NUM(BIN)
+           marital_status_Married * NUM(BIN)
+            marital_status_Single * NUM(BIN)
+                      gender_Male * NUM(BIN)
+                    gender_Female * NUM(BIN)
+                     gender_Other * NUM(BIN)
+                  education_level * CAT_ORD
+                    annual_income * NUM NORM
+                   monthly_income * NUM NORM
+     employment_status_Unemployed * NUM(BIN)
+        employment_status_Retired * NUM(BIN)  
+        employment_status_Student * NUM(BIN) 
+       employment_status_Employed * NUM(BIN)
+  employment_status_Self-employed * NUM(BIN) 
+             debt_to_income_ratio * NUM NORM
+                     credit_score * NUM NORM  
+                      loan_amount * NUM NORM
+           loan_purpose_Education * NUM(BIN)
+             loan_purpose_Medical * NUM(BIN)
+                loan_purpose_Home * NUM(BIN)
+                 loan_purpose_Car * NUM(BIN)
+               loan_purpose_Other * NUM(BIN) 
+            loan_purpose_Business * NUM(BIN)  
+            loan_purpose_Vacation * NUM(BIN)
+  loan_purpose_Debt consolidation * NUM(BIN)
+                    interest_rate * NUM NORM
+                     loan_term_60 * NUM(BIN)
+                      installment * NUM NORM
+                   grade_subgrade * CAT_ORD 
+             num_of_open_accounts * NUM NORM
+               total_credit_limit * NUM NORM
+                  current_balance * NUM NORM
+              delinquency_history * NUM NORM
+                   public_records * NUM NORM
+             num_of_delinquencies * NUM NORM
+------------------------------------------------
+                   loan_to_income * NUM NORM
+          has_delinquency_history * NUM(BIN)
+                   severity_score * NUM NORM
+                   payment_income * NUM NORM
+ 
+
+ 
+ 
+
+
+  
+  
+ 
+ 
+
+   
+ 
+    
+ 
+   
+
+
+
+
+
+
+    
