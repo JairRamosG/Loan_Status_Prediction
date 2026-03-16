@@ -42,32 +42,37 @@ log_file : 'EXP_01'
 
 # Definición de columnas
 columnas:
-  ignorar: []
 
+  ignorar: []  
+  
   num:
-    - 'credit_score'
-    - 'debt_to_income_ratio'
-    - 'num_of_delinquencies'
-    - 'monthly_income'
-    - 'current_balance'
-    - 'age'
-    - 'annual_income'
-    - 'interest_rate'
-    - 'loan_amount'
-    - 'num_of_open_accounts'
-    - 'total_credit_limit'
-    - 'installment'               
+    - age
+    - annual_income
+    - monthly_income
+    - debt_to_income_ratio
+    - credit_score
+    - loan_amount
+    - interest_rate
+    - loan_term           
+    - installment
+    - num_of_open_accounts
+    - total_credit_limit
+    - current_balance
+    - delinquency_history      
+    - public_records           
+    - num_of_delinquencies
 
   cat_ord:
-    - 'education_level'      
-    - 'grade_subgrade'                 
+    - education_level      
+    - grade_subgrade           
+
 
   cat_nom_ohe_drop:
-    - 'gender'               
-    - 'marital_status'      
-    - 'loan_term'            
-    - 'employment_status'   
+    - gender
+    - marital_status
+    - employment_status
+    - loan_purpose
 
-  cat_nom_ohe: []
+  cat_nom_ohe: []  
 
-  cat_nom_frec: []
+  cat_nom_frec: []  

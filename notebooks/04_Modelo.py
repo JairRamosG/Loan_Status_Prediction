@@ -75,13 +75,11 @@ def train_model(config_file):
         CAT_NOM_OHE_DROP_COLS+
         CAT_NOM_OHE_COLS+
         CAT_NOM_OHE_FREC_COLS)
-    
     faltantes = [col for col in required_cols if col not in data.columns]
     if faltantes:
-        logger.error(f'Faltan columnas en los datos a trabajar: {faltantes}')
-        raise ValueError(f'Faltan columnas: {faltantes}')
-    logger.info("Todas las columnas están presentes")
-
+        logger.error(f'Faltan columnas: {faltantes}')
+        raise ValueError(f'Flatan columnas: {faltantes}')
+    
     # Validación del conjunto de datos
     X = data.drop(columns=[TARGET_VARIABLE])
     y = data[TARGET_VARIABLE]
@@ -94,10 +92,10 @@ def train_model(config_file):
         random_state= seed,
         stratify= y)
     logger.info("Validación del conjunto de datos realizada")
-    logger.info(f" X_train: {X_train.shape}")
-    logger.info(f" X_test : {X_test.shape}")
-    logger.info(f" y_train: {y_train.shape}")
-    logger.info(f" y_test : {y_test.shape}")
+    logger.info(f"\tX_train: {X_train.shape}")
+    logger.info(f"\tX_test : {X_test.shape}")
+    logger.info(f"\ty_train: {y_train.shape}")
+    logger.info(f"\ty_test : {y_test.shape}")
 
     # Identificacion de las columnas
     ignorar_cols = IGNORAR_COLS.copy()
@@ -107,9 +105,16 @@ def train_model(config_file):
     cat_nom_ohe_cols = CAT_NOM_OHE_COLS.copy()
     cat_nom_ohe_frec_cols = CAT_NOM_OHE_FREC_COLS.copy()
     
-    print(X_train.shape)
-    print(X_test.shape)
-    print(y_train.shape)
+    logger.info("Columnas cargadas del archivo de configuración:")
+    logger.info(f"\t{len(ignorar_cols)}\t Ignoradas") 
+    logger.info(f"\t{len(num_cols)}\t Numericas") 
+    logger.info(f"\t{len(cat_ord_cols)}\t Categoricas ordinales")
+    logger.info(f"\t{len(cat_nom_ohe_drop_cols)}\t Categoricas nominales ohe drop")
+    logger.info(f"\t{len(cat_nom_ohe_cols)}\t Categoricas nominales ohe")
+    logger.info(f"\t{len(cat_nom_ohe_frec_cols)}\t Categoricas nominales freq ohe")
+
+    # COnstrucción del pipeline
+
     print(y_test.shape)
     pass
 
