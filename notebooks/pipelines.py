@@ -72,10 +72,10 @@ def build_full_pipeline(config, seed):
 
     # Ensablo el pipeline para tratar los datos y entrenar el modelo
     pipeline = Pipeline([
-        ('feature_engineering',  FeatureEngineering(**feature_engineering_config)),
+        ('feature_engineering', FeatureEngineering(**feature_engineering_config)),
         ('preprocessor', preprocessor),
         ('smote', SMOTE(**smote_config)),
         ('model', model)
     ])
 
-    
+    return pipeline

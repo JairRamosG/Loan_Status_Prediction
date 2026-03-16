@@ -95,7 +95,7 @@ columnas:
     - marital_status
     - employment_status
     - loan_purpose
-    - loan_term                    # <-- movida aquí
+    - loan_term                   
 
   cat_nom_ohe: []                         
   cat_nom_frec: []                       
@@ -112,12 +112,17 @@ preprocessing:
 ######## FEATURE ENGINEERING
 feature_engineering:
   create_age_group: True
-  age_bins: [20, 29, 35, 40, 50, 75]          # nombre corregido
-  age_labels: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']  # corregido
+  age_bins: [20, 29, 35, 40, 50, 75]         
+  age_labels: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']  
+
   create_loan_to_income: True
-  create_has_delinquency_story: True #
+
+  create_has_delinquency_story: True 
+
   create_severity_score: True
+
   create_payment_income: True
+  
 ######## PREPROCESSING
 # tengo que escribir aqui lo ya trabajado
 ######## SMOTE
