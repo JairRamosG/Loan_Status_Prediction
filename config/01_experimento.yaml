@@ -79,13 +79,16 @@ columnas:
 
 ######## FEATURE ENGINEERING
 feature_engineering:
+  create_age_group: True
   bins : [20, 29, 35, 40, 50, 75]
   labels : ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
-  # falta poner de todas las demás
-
+  create_loan_to_income: True
+  create_delinquency_flags: True
+  create_severity_score: True
+  create_payment_income: True
 
 ######## PREPROCESSING
-tengo que escribir aqui lo ya trabajado
+# tengo que escribir aqui lo ya trabajado
 ######## SMOTE
 
 ######## MODELS

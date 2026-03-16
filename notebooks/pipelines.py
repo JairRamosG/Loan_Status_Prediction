@@ -48,6 +48,10 @@ def build_full_pipeline(config, seed):
     except Exception as e:
         print(str(e)) 
 
+    # Insertar las variables nuevas de Feature Engineering dinamicamente
+    if feature_engineering_config.get('create_age_group', False):
+        columnas_config['cat_ord'] = columnas_config.get('cat_ord', []) + ['age_group']
+
     # Construcción de los componentes del pipeline
     preprocessor = build_preprocessor(columnas_config, preprocessor_config)
     model = build_model(models_config, seed)
