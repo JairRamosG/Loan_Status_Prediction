@@ -6,22 +6,30 @@ class Feature_Engineering(BaseEstimator, TransformerMixin):
     ''' 
     Creación de las nuevas características a partir de los datos originales
     '''
-    def __init__(self):
+    def __init__(self, age_bins = None, age_labels = None, **kwargs):
+        self.age_bins = age_bins
+        self.age_labels = age_labels
         pass
     
     def fit(self, X, y = None):
         return self
+    
     def transform(self, X):
-        X = X.copy()
+        X_new = X.copy()
+
+        # Age_group
+        if self.age_bins is not None and self.age_bins is not None:
+            if 'age' in X.columns():
+                X_new['age_group'] = pd.cut(X_new['age'], bins = self.age_bins, labels = self.age_labels)
 
         # Aspecto financiero
-        X['loan_to_income'] = X['loan_amount'] - X['annual_income']
+        X_new['loan_to_income'] = X_new['loan_amount'] - X_new['annual_income']
 
         # Incumplimientos
-        X['has_delinquency_history'] = (X['delinquency_history'] > 0).astype(int)
-        X['sevetity_score'] = X['num_of_delinquencies'] + X['public_records']
+        X_new['has_delinquency_history'] = (X_new['delinquency_history'] > 0).astype(int)
+        X_new['sevetity_score'] = X_new['num_of_delinquencies'] + X_new['public_records']
 
         ## Pagos
-        X['payment_income'] = X['installment'] / X['monthly_income']
+        X_new['payment_income'] = X_new['installment'] / X_new['monthly_income']
 
-        return X
+        return X_new

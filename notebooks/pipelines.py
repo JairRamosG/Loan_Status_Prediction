@@ -1,4 +1,5 @@
 from sklearn.compose import ColumnTransformer
+from imblearn.pipeline import Pipeline
 
 def build_preprocessor(columnas_config, preprocessor_config):
     """
@@ -18,6 +19,10 @@ def build_preprocessor(columnas_config, preprocessor_config):
     cat_nom_ohe_frec_cols = columnas_config.get('cat_nom_frec', [])
 
     # Pipeline para datos numéricos
+    num_cols_processing = Pipeline([
+        ()
+    ])
+
 
     # Pipeline para datos categóricos ordinales
 
