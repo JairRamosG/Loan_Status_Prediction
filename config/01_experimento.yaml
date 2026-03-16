@@ -44,8 +44,8 @@ log_file : 'EXP_01'
 columnas:
 
   ignorar: []  
-  
-  num:
+
+  num_cols:
     - age
     - annual_income
     - monthly_income
@@ -62,7 +62,7 @@ columnas:
     - public_records           
     - num_of_delinquencies
 
-  cat_ord:
+  cat_ord_cols:
     - education_level      
     - grade_subgrade           
 
@@ -76,3 +76,11 @@ columnas:
   cat_nom_ohe: []  
 
   cat_nom_frec: []  
+
+######## PREPROCESSING
+
+######## FEATURE ENGINEERING
+
+######## SMOTE
+
+######## MODELS

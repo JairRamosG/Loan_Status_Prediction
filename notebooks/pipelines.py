@@ -1,4 +1,27 @@
+from sklearn.compose import ColumnTransformer
+
 def build_preprocessor(columnas_config, preprocessor_config):
+    """
+    Construir los pipelines individuales para cada tipo de dato y despues unirlos en un 
+    preprocesador con ColumnTransformer. Este es un elemento usado en build_full_pipeline.
+    Args:
+        columnas_config (dict): Parte correspondiente de las caracteristicas originales 
+        preprocessor_config (dict): Parte correspondiente de variables del preprocesamiento 
+    """
+
+    # Extraer las columnas originales
+    ignorar_cols = columnas_config.get('ignorar', [])
+    num_cols = columnas_config.get('num_cols', [])
+    cat_ord_cols = columnas_config.get('cat_ord_cols', [])
+    cat_nom_ohe_drop_cols = columnas_config.get('cat_nom_ohe_drop', [])
+    cat_nom_ohe_cols = columnas_config.get('cat_nom_ohe', [])
+    cat_nom_ohe_frec_cols = columnas_config.get('cat_nom_frec', [])
+
+    # Pipeline para datos numéricos
+
+    # Pipeline para datos categóricos ordinales
+
+    # Pipeline para datos categóricos nominales ohe
     pass
 
 def build_model(models_config, seed):
@@ -24,3 +47,5 @@ def build_full_pipeline(config, seed):
     # Construcción de los componentes del pipeline
     preprocessor = build_preprocessor(columnas_config, preprocessor_config)
     model = build_model(models_config, seed)
+
+    
