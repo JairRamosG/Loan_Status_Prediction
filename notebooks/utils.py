@@ -7,7 +7,7 @@ class Feature_Engineering(BaseEstimator, TransformerMixin):
     Creación de las nuevas características a partir de los datos originales
     '''
     def __init__(self,
-                 create_age_group = True
+                 create_age_group = True,
                  age_bins = None,
                  age_labels = None,
                  **kwargs):

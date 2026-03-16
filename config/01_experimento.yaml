@@ -42,51 +42,82 @@ log_file : 'EXP_01'
 
 # Definición de columnas
 columnas:
-
   ignorar: []
 
-  num_cols:
-    - age
-    - annual_income
-    - monthly_income
-    - debt_to_income_ratio
-    - credit_score
-    - loan_amount
-    - interest_rate
-    - loan_term           
-    - installment
-    - num_of_open_accounts
-    - total_credit_limit
-    - current_balance
-    - delinquency_history      
-    - public_records           
-    - num_of_delinquencies
+  numeric_cols:
+    age:
+      transform: 'passthrough'         
+    annual_income:
+      transform: 'log_scale'             
+    monthly_income:
+      transform: 'log_scale'
+    debt_to_income_ratio:
+      transform: 'log_scale'
+    credit_score:
+      transform: 'scale'                 
+    loan_amount:
+      transform: 'scale'
+    interest_rate:
+      transform: 'scale'
+    installment:
+      transform: 'scale'
+    num_of_open_accounts:
+      transform: 'scale'
+    total_credit_limit:
+      transform: 'log_scale'
+    current_balance:
+      transform: 'log_scale'
+    delinquency_history:
+      transform: 'log1p_scale'          
+    public_records:
+      transform: 'scale'
+    num_of_delinquencies:
+      transform: 'scale'
+    # Nuevas variables (se crearán en feature engineering)
+    loan_to_income:
+      transform: 'scale'
+    severity_score:
+      transform: 'scale'
+    payment_income:
+      transform: 'scale'
+    # has_delinquency_history es binaria, se puede dejar fuera o con passthrough
 
   cat_ord_cols:
-    - education_level      
-    - grade_subgrade   
-    - age_group        
+    education_level:
+      categories: ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate']
+    grade_subgrade:
+      categories: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'G1']
+    age_group:                              
+      categories: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
 
   cat_nom_ohe_drop:
     - gender
     - marital_status
     - employment_status
     - loan_purpose
+    - loan_term                    # <-- movida aquí
 
-  cat_nom_ohe: []  
+  cat_nom_ohe: []                         
+  cat_nom_frec: []                       
 
-  cat_nom_frec: []  
+# Configuración del preprocesamiento global
+preprocessing:
+  remainder: 'passthrough'
+  onehot_drop:
+    drop: 'first'
+    handle_unknown: 'ignore'
+  onehot:
+    handle_unknown: 'ignore'  
 
 ######## FEATURE ENGINEERING
 feature_engineering:
   create_age_group: True
-  bins : [20, 29, 35, 40, 50, 75]
-  labels : ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
+  age_bins: [20, 29, 35, 40, 50, 75]          # nombre corregido
+  age_labels: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']  # corregido
   create_loan_to_income: True
   create_delinquency_flags: True
   create_severity_score: True
   create_payment_income: True
-
 ######## PREPROCESSING
 # tengo que escribir aqui lo ya trabajado
 ######## SMOTE

@@ -51,6 +51,11 @@ def build_full_pipeline(config, seed):
     # Insertar las variables nuevas de Feature Engineering dinamicamente
     if feature_engineering_config.get('create_age_group', False):
         columnas_config['cat_ord'] = columnas_config.get('cat_ord', []) + ['age_group']
+    
+    if feature_engineering_config.get('loan_to_income', False):
+        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['loan_to_income']
+
+    
 
     # Construcción de los componentes del pipeline
     preprocessor = build_preprocessor(columnas_config, preprocessor_config)
