@@ -43,7 +43,7 @@ log_file : 'EXP_01'
 # Definición de columnas
 columnas:
 
-  ignorar: []  
+  ignorar: []
 
   num_cols:
     - age
@@ -64,8 +64,8 @@ columnas:
 
   cat_ord_cols:
     - education_level      
-    - grade_subgrade           
-
+    - grade_subgrade   
+    - age_group        
 
   cat_nom_ohe_drop:
     - gender
@@ -77,9 +77,12 @@ columnas:
 
   cat_nom_frec: []  
 
-######## PREPROCESSING
-
 ######## FEATURE ENGINEERING
+feature_engineering:
+  bins : [20, 29, 35, 40, 50, 75]
+  labels : ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
+
+######## PREPROCESSING
 
 ######## SMOTE
 
