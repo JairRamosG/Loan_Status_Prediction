@@ -13,22 +13,21 @@ def build_preprocessor(columnas_config, preprocessor_config):
     """
 
     # Columnas nuevas de ingenieria de características
-    ignorar_cols = columnas_config.get('ignorar', [])
-    num_cols = columnas_config.get('num_cols', [])
-    cat_ord_cols = columnas_config.get('cat_ord_cols', [])
-    cat_nom_ohe_drop_cols = columnas_config.get('cat_nom_ohe_drop', [])
-    cat_nom_ohe_cols = columnas_config.get('cat_nom_ohe', [])
-    cat_nom_ohe_frec_cols = columnas_config.get('cat_nom_frec', [])
+    ignorar = columnas_config.get('ignorar', {})
+    num_dict = columnas_config.get('numericas', {})
+    ord_dict = columnas_config.get('ordinales', {})
+    nom_drop_list = columnas_config.get('nominales_ohe_drop', [])
+    nom_ohe_list = columnas_config.get('nominales_ohe', [])
+    nom_frec_list = columnas_config.get('nominales_frecuencia', [])
 
     # Pipeline para datos numéricos
-    num_cols_processing = Pipeline([
-        ()
-    ])
 
     # Pipeline para datos categóricos ordinales
 
     # Pipeline para datos categóricos nominales ohe
     pass
+
+build_preprocessor()
 
 def build_model(models_config, seed):
     pass

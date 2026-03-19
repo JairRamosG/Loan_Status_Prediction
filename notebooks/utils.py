@@ -65,4 +65,4 @@ df_test = pd.DataFrame({
 
 fe = Feature_Engineering(age_bins=[0,30,50,100], age_labels=['joven','adulto','mayor'])
 df_result = fe.transform(df_test)
-print(df_result.head())
+print(df_result)

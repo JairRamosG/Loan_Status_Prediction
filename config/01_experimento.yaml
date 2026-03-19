@@ -44,7 +44,7 @@ log_file : 'EXP_01'
 columnas:
   ignorar: []
 
-  numeric_cols:
+  num_cols:
     age:
       transform: 'passthrough'         
     annual_income:
