@@ -12,12 +12,13 @@ def build_preprocessor(columnas_config, preprocessor_config):
         columnas_config (dict): Parte correspondiente de las caracteristicas originales 
         preprocessor_config (dict): Parte correspondiente de variables del preprocesamiento 
     """
+
     # Columnas nuevas de ingenieria de características
     num_cols = columnas_config.get('num_cols', {})
     cat_ord_cols = columnas_config.get('cat_ord_cols', {})
     cat_nom_ohe_drop = columnas_config.get('cat_nom_ohe_drop', [])
     cat_nom_ohe = columnas_config.get('cat_nom_ohe', [])
-    cat_nom_frec = columnas_config.get('cat_nom_frec', [])
+    #cat_nom_frec = columnas_config.get('cat_nom_frec', [])
 
     transformers = []
 
@@ -29,28 +30,36 @@ def build_preprocessor(columnas_config, preprocessor_config):
     
     for t, cols in transform_groups.items():
         if t == 'passthrough':
-            transformers.append((f'num_passthrough', 'passthrough', cols))
+            transformers.append((f'num_passthrough_{len(transformers)}', 'passthrough', cols))
+
         elif t == 'scale':
             pipeline = Pipeline([('scaler', StandardScaler())])
-            transformers.append((f'scale', pipeline, cols))
+            transformers.append((f'scale_{len(transformers)}', pipeline, cols))
+
         elif t == 'log_scale':
-            num_pipeline = Pipeline([('log', FunctionTransformer(np.log, validate=True)),
-                                    ('scaler', StandardScaler())])
-            transformers.append((f'log_scale', num_pipeline, cols))
+            pipeline = Pipeline([
+                ('log', FunctionTransformer(np.log, validate=True)),
+                ('scaler', StandardScaler())
+                ])
+            transformers.append((f'log_scale_{len(transformers)}', pipeline, cols))
+
         elif t == 'log1p_scale':
-            pipeline = Pipeline([('log1p_scale', FunctionTransformer(np.log1p, validate= True))])
-            transformers.append(('log1p_scale', num_pipeline, cols))
+            pipeline = Pipeline([
+                ('log1p', FunctionTransformer(np.log1p, validate= True)),
+                ('scaler', StandardScaler())])
+            transformers.append((f'log1p_scale_{len(transformers)}', pipeline, cols))
+
         else:
-            transformers.append(('no_reconocida', 'passthrough', cols)) 
+            transformers.append((f'no_reconocida_{t}_{len(transformers)}', 'passthrough', cols)) 
 
     # Pipeline para datos categóricos ordinales
     if cat_ord_cols:
         ord_cols = list(cat_ord_cols.keys())
         ord_categories = [cat_ord_cols[col]['categories'] for col in ord_cols]
         ord_pipeline = Pipeline([('ord_encoder', OrdinalEncoder(categories=ord_categories))])
-        transformers.append(('ord_encoder', ord_pipeline, cat_ord_cols))
+        transformers.append((f'ord_encoder_{len(transformers)}', ord_pipeline, ord_cols))
 
-    # Pipeline para datos categóricos nominales ohe
+    # Pipeline para datos categóricos nominales ohe_dop
     if cat_nom_ohe_drop:
         ohe_drop_config = preprocessor_config.get('onehot_drop', {})
         cat_ohe_drop_pipeline = Pipeline([('ohe_drop', OneHotEncoder(
@@ -58,13 +67,24 @@ def build_preprocessor(columnas_config, preprocessor_config):
             handle_unknown = ohe_drop_config.get('handle_unknown', 'ignore'),
             sparse_output = False))
             ])
-        transformers.append(('ohe_drop', cat_ohe_drop_pipeline, cat_nom_ohe_drop))
+        transformers.append((f'ohe_drop_{len(transformers)}', cat_ohe_drop_pipeline, cat_nom_ohe_drop))
+    
+    # Pipeline para datos categoricos nominales ohe
+    if cat_nom_ohe:
+        ohe_config = preprocessor_config.get('onehot', {})
+        ohe_pipeline = Pipeline([('ohe', OneHotEncoder(
+            handle_unknown = ohe_config.get('handle_unknown', 'ignore'),
+            sparse_output = False))
+            ])
+        transformers.append((f'ohe_{len(transformers)}', ohe_pipeline, cat_nom_ohe))
+
 
     processor = ColumnTransformer(
         transformers = transformers,
         remainder = preprocessor_config.get('remainder', 'drop')
     )
     return processor
+
 
 def build_model(models_config, seed):
     pass
