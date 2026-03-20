@@ -117,6 +117,7 @@ def build_model(model_config, seed_config):
         n_estimators = model_config.get('n_estimators', 100),
         max_samples = model_config.get('max_samples', 0.3),
         bootstrap = model_config.get('bootstrap', True),
+        random_state = seed,
         n_jobs = model_config.get('n_jobs', -1)
     )
     return bagging
@@ -144,7 +145,7 @@ def build_full_pipeline(config, seed):
     if feature_engineering_config.get('create_loan_to_income', False):
         columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['loan_to_income']
 
-    if feature_engineering_config.get('create_has_delinquency_story', False):
+    if feature_engineering_config.get('create_has_delinquency_history', False):
         columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['has_delinquency_story']
     
     if feature_engineering_config.get('create_severity_score', False):

@@ -80,7 +80,7 @@ columnas:
       transform: 'scale'
     payment_income:
       transform: 'scale'
-    # has_delinquency_history es binaria
+    has_delinquency_history:
       transform: 'passthrough'
 
   # Variables ordinales 
@@ -123,7 +123,7 @@ feature_engineering:
 
   create_loan_to_income: True
 
-  create_has_delinquency_story: True 
+  create_has_delinquency_history: True 
 
   create_severity_score: True
 
