@@ -74,14 +74,14 @@ columnas:
     num_of_delinquencies:
       transform: 'scale'
     # Nuevas
-    loan_to_income:
-      transform: 'scale'
-    severity_score:
-      transform: 'scale'
-    payment_income:
-      transform: 'scale'
-    has_delinquency_history:
-      transform: 'passthrough'
+    #loan_to_income:
+    #  transform: 'scale'
+    #severity_score:
+    #  transform: 'scale'
+    #payment_income:
+    #  transform: 'scale'
+    #has_delinquency_history:
+    #  transform: 'passthrough'
 
   # Variables ordinales 
   cat_ord_cols:
@@ -89,8 +89,8 @@ columnas:
       categories: ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate']
     grade_subgrade:
       categories: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'G1']
-    age_group:
-      categories: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
+    #age_group:
+    #  categories: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
 
   # Variables nominales con OneHotEncoder (drop first)
   cat_nom_ohe_drop:

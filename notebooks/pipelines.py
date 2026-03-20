@@ -140,27 +140,28 @@ def build_full_pipeline(config, seed):
 
     # Insertar las variables nuevas de Feature Engineering dinamicamente
     if feature_engineering_config.get('create_age_group', False):
-        columnas_config['cat_ord_cols'] = columnas_config.get('cat_ord_cols', []) + ['age_group']
-    
+        age_labels = feature_engineering_config.get('age_labels', [])
+        columnas_config.setdefault('cat_ord_cols', {})['age_group'] = {'categories': age_labels}
+
     if feature_engineering_config.get('create_loan_to_income', False):
-        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['loan_to_income']
+        columnas_config.setdefault('num_cols', {})['loan_to_income'] = {'transform': 'scale'}
 
     if feature_engineering_config.get('create_has_delinquency_history', False):
-        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['has_delinquency_story']
-    
+        columnas_config.setdefault('num_cols', {})['has_delinquency_history'] = {'transform': 'passthrough'}
+
     if feature_engineering_config.get('create_severity_score', False):
-        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['severity_score']
+        columnas_config.setdefault('num_cols', {})['severity_score'] = {'transform': 'scale'}
 
     if feature_engineering_config.get('create_payment_income', False):
-        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['payment_income']
-
+        columnas_config.setdefault('num_cols', {})['payment_income'] = {'transform': 'scale'}
+    
     # componentes del pipeline
     preprocessor = build_preprocessor(columnas_config, preprocessor_config)
     model = build_model(models_config, seed)
 
     # Ensablo el pipeline para tratar los datos y entrenar el modelo
     pipeline = Pipeline([
-        ('feature_engineering', FeatureEngineering(**feature_engineering_config)),
+        ('feature_engineering', Feature_Engineering(**feature_engineering_config)),
         ('preprocessor', preprocessor),
         ('smote', SMOTE(**smote_config)),
         ('model', model)
