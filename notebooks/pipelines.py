@@ -143,16 +143,16 @@ def build_full_pipeline(config, seed):
         columnas_config['cat_ord_cols'] = columnas_config.get('cat_ord_cols', []) + ['age_group']
     
     if feature_engineering_config.get('create_loan_to_income', False):
-        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['loan_to_income']
+        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['loan_to_income']
 
     if feature_engineering_config.get('create_has_delinquency_history', False):
-        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['has_delinquency_story']
+        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['has_delinquency_story']
     
     if feature_engineering_config.get('create_severity_score', False):
-        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['severity_score']
+        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['severity_score']
 
     if feature_engineering_config.get('create_payment_income', False):
-        columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['payment_income']
+        columnas_config['num_cols'] = columnas_config.get('num_cols', []) + ['payment_income']
 
     # componentes del pipeline
     preprocessor = build_preprocessor(columnas_config, preprocessor_config)
