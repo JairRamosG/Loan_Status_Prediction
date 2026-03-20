@@ -1,5 +1,6 @@
 from sklearn.compose import ColumnTransformer
 from imblearn.pipeline import Pipeline
+import numpy as np
 from utils import FeatureEngineering
 import importlib
 from sklearn.ensemble import BaggingClassifier
@@ -93,8 +94,6 @@ def load_class(class_path):
     '''
     module_name, class_name = class_path.rsplit('.', 1)
     module = importlib.import_module(module_name)
-    print(module)
-    print(class_name)
     return getattr(module, class_name)
 
 def build_model(model_config, seed_config):
@@ -104,7 +103,8 @@ def build_model(model_config, seed_config):
         models_config (dict): Configuración para los modelos utilizados
         seed_config (int): Semilla para trazabilidad de los experimentos
     '''
-    base_model_params_config = model_config.get('base_model_params', {})
+    bagging_config = model_config.get('bagging_classifier', {})
+    base_model_params_config = bagging_config.get('base_model_params', {})
     class_path = base_model_params_config.get('class', None)
     params_path = base_model_params_config.get('params', {})
     seed = seed_config
@@ -114,11 +114,11 @@ def build_model(model_config, seed_config):
 
     bagging = BaggingClassifier(
         estimator = base_estimator,
-        n_estimators = model_config.get('n_estimators', 100),
-        max_samples = model_config.get('max_samples', 0.3),
-        bootstrap = model_config.get('bootstrap', True),
+        n_estimators = bagging_config.get('n_estimators', 100),
+        max_samples = bagging_config.get('max_samples', 0.3),
+        bootstrap = bagging_config.get('bootstrap', True),
         random_state = seed,
-        n_jobs = model_config.get('n_jobs', -1)
+        n_jobs = bagging_config.get('n_jobs', -1)
     )
     return bagging
 
@@ -140,7 +140,7 @@ def build_full_pipeline(config, seed):
 
     # Insertar las variables nuevas de Feature Engineering dinamicamente
     if feature_engineering_config.get('create_age_group', False):
-        columnas_config['cat_ord'] = columnas_config.get('cat_ord', []) + ['age_group']
+        columnas_config['cat_ord_cols'] = columnas_config.get('cat_ord_cols', []) + ['age_group']
     
     if feature_engineering_config.get('create_loan_to_income', False):
         columnas_config['numeric_cols'] = columnas_config.get('numeric_cols', []) + ['loan_to_income']

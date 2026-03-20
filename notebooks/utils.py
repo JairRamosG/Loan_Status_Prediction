@@ -5,14 +5,15 @@ class Feature_Engineering(BaseEstimator, TransformerMixin):
     ''' 
     Creación de las nuevas características a partir de los datos originales
     '''
-    def __init__(self,
-                 create_age_group = True,
-                 age_bins = None,
-                 age_labels = None,
-                 create_loan_to_income = True,
-                 create_has_delinquency_history = True,
-                 create_severity_score = True,
-                 create_payment_income = True):
+    def __init__(
+            self,
+            create_age_group = True,
+            age_bins = None,
+            age_labels = None,
+            create_loan_to_income = True,
+            create_has_delinquency_history = True,
+            create_severity_score = True,
+            create_payment_income = True):
         
         self.create_age_group = create_age_group
         self.age_bins = age_bins
@@ -52,7 +53,7 @@ class Feature_Engineering(BaseEstimator, TransformerMixin):
         return X_new
 
 
-df_test = pd.DataFrame({
+'''df_test = pd.DataFrame({
     'age': [25, 45, 60],
     'loan_amount': [10000, 20000, 15000],
     'annual_income': [30000, 50000, 40000],
@@ -65,4 +66,4 @@ df_test = pd.DataFrame({
 
 fe = Feature_Engineering(age_bins=[0,30,50,100], age_labels=['joven','adulto','mayor'])
 df_result = fe.transform(df_test)
-print(df_result)
+print(df_result)'''
