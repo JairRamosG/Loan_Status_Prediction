@@ -129,8 +129,14 @@ feature_engineering:
 
   create_payment_income: True
   
-######## PREPROCESSING
-# tengo que escribir aqui lo ya trabajado
 ######## SMOTE
+smote:
+  sampling_strategy: 'auto'
+  k_neighbors: 5
+  random_state: 42
+
 
 ######## MODELS
+models:
+  n_forest: 11 
+  
