@@ -1,6 +1,8 @@
 from sklearn.compose import ColumnTransformer
 from imblearn.pipeline import Pipeline
 from utils import FeatureEngineering
+import importlib
+from sklearn.ensemble import BaggingClassifier
 from imblearn.over_sampling import SMOTE
 from sklearn.preprocessing import StandardScaler, FunctionTransformer, OneHotEncoder, OrdinalEncoder
 
@@ -85,9 +87,39 @@ def build_preprocessor(columnas_config, preprocessor_config):
     )
     return processor
 
+def load_class(class_path):
+    '''
+    Se importa el modelo qeu se va a usar para base en los entrenamientos del BaggigClassifier
+    '''
+    module_name, class_name = class_path.rsplit('.', 1)
+    module = importlib.import_module(module_name)
+    print(module)
+    print(class_name)
+    return getattr(module, class_name)
 
-def build_model(models_config, seed):
-    pass
+def build_model(model_config, seed_config):
+    '''
+    COnstruye el modelo de bagging con el archivo de configuración, además se importa el modelo base 
+    Args:
+        models_config (dict): Configuración para los modelos utilizados
+        seed_config (int): Semilla para trazabilidad de los experimentos
+    '''
+    base_model_params_config = model_config.get('base_model_params', {})
+    class_path = base_model_params_config.get('class', None)
+    params_path = base_model_params_config.get('params', {})
+    seed = seed_config
+
+    base_class = load_class(class_path)
+    base_estimator = base_class(**params_path)
+
+    bagging = BaggingClassifier(
+        estimator = base_estimator,
+        n_estimators = model_config.get('n_estimators', 100),
+        max_samples = model_config.get('max_samples', 0.3),
+        bootstrap = model_config.get('bootstrap', True),
+        n_jobs = model_config.get('n_jobs', -1)
+    )
+    return bagging
 
 def build_full_pipeline(config, seed):
     """
