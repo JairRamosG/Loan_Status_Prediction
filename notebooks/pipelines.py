@@ -1,7 +1,7 @@
 from sklearn.compose import ColumnTransformer
 from imblearn.pipeline import Pipeline
 import numpy as np
-from utils import FeatureEngineering
+from utils import Feature_Engineering
 import importlib
 from sklearn.ensemble import BaggingClassifier
 from imblearn.over_sampling import SMOTE
