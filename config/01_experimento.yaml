@@ -137,7 +137,7 @@ smote:
 
 
 ######## MODELS
-bagging_classifier:
+models:
   n_estimators: 500
   max_samples : 0.5
   bootstrap : True

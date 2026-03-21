@@ -1,14 +1,16 @@
-2026-03-15 20:57:45,560 - INFO - Iniciando con el experimento EXP_01
-2026-03-15 20:57:45,618 - INFO - Datos cargados correctamente
-2026-03-15 20:57:45,633 - INFO - Validación del conjunto de datos realizada
-2026-03-15 20:57:45,633 - INFO - 	X_train: (16000, 21)
-2026-03-15 20:57:45,633 - INFO - 	X_test : (4000, 21)
-2026-03-15 20:57:45,633 - INFO - 	y_train: (16000,)
-2026-03-15 20:57:45,633 - INFO - 	y_test : (4000,)
-2026-03-15 20:57:45,633 - INFO - Columnas cargadas del archivo de configuración:
-2026-03-15 20:57:45,633 - INFO - 	0	 Ignoradas
-2026-03-15 20:57:45,634 - INFO - 	15	 Numericas
-2026-03-15 20:57:45,634 - INFO - 	2	 Categoricas ordinales
-2026-03-15 20:57:45,634 - INFO - 	4	 Categoricas nominales ohe drop
-2026-03-15 20:57:45,634 - INFO - 	0	 Categoricas nominales ohe
-2026-03-15 20:57:45,634 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 12:57:53,832 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 12:57:53,890 - INFO - Datos cargados correctamente
+2026-03-21 12:57:53,905 - INFO - Validación del conjunto de datos realizada
+2026-03-21 12:57:53,905 - INFO - 	X_train: (16000, 21)
+2026-03-21 12:57:53,905 - INFO - 	X_test : (4000, 21)
+2026-03-21 12:57:53,906 - INFO - 	y_train: (16000,)
+2026-03-21 12:57:53,906 - INFO - 	y_test : (4000,)
+2026-03-21 12:57:53,906 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 12:57:53,906 - INFO - 	0	 Ignoradas
+2026-03-21 12:57:53,906 - INFO - 	0	 Numericas
+2026-03-21 12:57:53,906 - INFO - 	0	 Categoricas ordinales
+2026-03-21 12:57:53,906 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 12:57:53,906 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 12:57:53,906 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 12:57:53,906 - INFO - Pipeline construido exitosamente
+2026-03-21 12:57:53,906 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
