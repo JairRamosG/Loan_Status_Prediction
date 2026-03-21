@@ -123,6 +123,9 @@ def train_model(config_file):
         logger.error(f'Error contruyendo el pipeline: {str(e)}')
         raise
 
+    # Obtener la configuración para la validación cruzada
+    
+
     print('Todo bien')
     pass
 

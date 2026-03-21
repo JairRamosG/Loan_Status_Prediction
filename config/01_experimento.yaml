@@ -149,3 +149,24 @@ models:
         max_leaf_nodes : 20
         random_state : null
         n_jobs : -1
+
+# BÚSQUEDA DE HIPERPARÁMETROS EN EL GRID
+grid_search:
+  scoring: 'matthews_corrcoef' 
+  cv_folds: 3                    
+  n_jobs: -1                     
+  verbose: 1                     
+  error_score: 'raise'          
+  shuffle: true                     
+  param_grid:    
+    # BAGGING
+    'model__n_estimators': [350, 500]
+    'model__max_samples' : [0.3, 0.5]
+    'model__bootstrap' : [True]
+    'model__n_jobs' : [-1]
+    # RANDOM FOREST
+    'model__estimator__n_estimators': [30, 35]
+    'model__estimator__max_leaf_nodes' : [20, 25]
+    'model__estimator__min_samples_split': [20, 50]
+    'model__estimator__max_features': ['sqrt']
+    
