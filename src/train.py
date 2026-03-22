@@ -128,24 +128,36 @@ def train_model(config_file):
     grid_config = config.get('random_search', {})
 
     tipo = grid_config.get('tipo')
+    n_iter = grid_config.get('n_iter', 25)
     scoring = grid_config.get('scoring', 'precision')
     cv_folds = grid_config.get('cv_folds', 3)
     n_jobs = grid_config.get('n_jobs', -1)
     verbose = grid_config.get('verbose', 1)
     error_score = grid_config.get('error_score', 'raise')
-    shuffle = grid_config.get('shuffle', True)
     param_grid = grid_config.get('param_grid', {})
 
     logger.info('Configuración de CV:')
     logger.info(f'   Tipo: {tipo}')
+    logger.info(f'   n_iter: {n_iter}')
     logger.info(f'   scoring: {scoring}')
     logger.info(f'   cv_folds: {cv_folds}')
     logger.info(f'   n_jobs: {n_jobs}')
     logger.info(f'   verbose: {verbose}')
     logger.info(f'   error_score: {error_score}')
-    logger.info(f'   shuffle: {shuffle}')
 
-    # COnstruir el RandomizedSearchCV
+
+    # Construir el RandomizedSearchCV
+    grid = RandomizedSearchCV(
+        estimator = pipeline,
+        param_distributions = param_grid,
+        n_iter = n_iter,
+        scoring = scoring,
+        cv = cv_folds,
+        n_jobs = n_jobs,
+        verbose = verbose,
+        error_score = error_score,
+        random_state = seed
+        )
         
     print('bien')
     pass
