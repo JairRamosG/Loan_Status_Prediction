@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import RandomizedSearchCV
 from pipelines import build_full_pipeline
 
 def train_model(config_file):
@@ -124,9 +125,29 @@ def train_model(config_file):
         raise
 
     # Obtener la configuración para la validación cruzada
-    
+    grid_config = config.get('random_search', {})
 
-    print('Todo bien')
+    tipo = grid_config.get('tipo')
+    scoring = grid_config.get('scoring', 'precision')
+    cv_folds = grid_config.get('cv_folds', 3)
+    n_jobs = grid_config.get('n_jobs', -1)
+    verbose = grid_config.get('verbose', 1)
+    error_score = grid_config.get('error_score', 'raise')
+    shuffle = grid_config.get('shuffle', True)
+    param_grid = grid_config.get('param_grid', {})
+
+    logger.info('Configuración de CV:')
+    logger.info(f'   Tipo: {tipo}')
+    logger.info(f'   scoring: {scoring}')
+    logger.info(f'   cv_folds: {cv_folds}')
+    logger.info(f'   n_jobs: {n_jobs}')
+    logger.info(f'   verbose: {verbose}')
+    logger.info(f'   error_score: {error_score}')
+    logger.info(f'   shuffle: {shuffle}')
+
+    # COnstruir el RandomizedSearchCV
+        
+    print('bien')
     pass
 
 if __name__ == "__main__":
