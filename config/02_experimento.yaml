@@ -1,14 +1,11 @@
 # --- LOAN_STATUS_PREDICTION ---
-# config/01_experimento.yaml
-
-
-####### EDA
+# config/02_experimento.yaml
 
 # Nombre experimento
-experiment_name: 'EXP_01'
+experiment_name: 'EXP_02'
 
 # logger
-log_file : 'EXP_01'
+log_file : 'EXP_02.log'
 
 # Variable objetivo
 target_variable: 'loan_paid_back'
@@ -73,15 +70,7 @@ columnas:
       transform: 'scale'
     num_of_delinquencies:
       transform: 'scale'
-    # Nuevas
-    #loan_to_income:
-    #  transform: 'scale'
-    #severity_score:
-    #  transform: 'scale'
-    #payment_income:
-    #  transform: 'scale'
-    #has_delinquency_history:
-    #  transform: 'passthrough'
+
 
   # Variables ordinales 
   cat_ord_cols:
@@ -89,8 +78,6 @@ columnas:
       categories: [ "Bachelor's", "High School", "Master's", "PhD", "Other"]
     grade_subgrade:
       categories: ['A1','A2','A3','A4','A5', 'B1', 'B2','B3','B4','B5', 'C1', 'C2','C3','C4','C5', 'D1', 'D2','D3','D4','D5', 'E1', 'E2','E3','E4','E5', 'F1', 'F2', 'F3','F4','F5']
-    #age_group:
-    #  categories: ['joven', 'adulto_joven', 'adulto', 'adulto_mayor', '3_Edad']
 
   # Variables nominales con OneHotEncoder (drop first)
   cat_nom_ohe_drop:
@@ -135,39 +122,38 @@ smote:
   k_neighbors: 5
   random_state: 42
 
-
 ######## MODELS
 models:
-  n_estimators: 500
+  n_estimators: 600
   max_samples : 0.5
   bootstrap : True
   n_jobs : -1
   base_model_params:
       class: sklearn.ensemble.RandomForestClassifier
       params:
-        n_estimators: 30 
-        max_leaf_nodes : 20
+        n_estimators: 40 
+        max_leaf_nodes : 25
         random_state : null
         n_jobs : -1
 
 # BÚSQUEDA DE HIPERPARÁMETROS EN EL GRID
 random_search:
   tipo: 'RandomizedSearchCV'
-  n_iter: 30
+  n_iter: 35
   scoring: 'matthews_corrcoef' 
-  cv_folds: 3                
+  cv_folds: 5               
   n_jobs: -1                    
   verbose: 1                     
   error_score: 'raise'                        
   param_grid:    
     # BAGGING
-    'model__n_estimators': [350, 500]
-    'model__max_samples' : [0.3, 0.5]
+    'model__n_estimators': [400, 450]
+    'model__max_samples' : [0.4, 0.6]
     'model__bootstrap' : [True]
     'model__n_jobs' : [-1]
     # RANDOM FOREST
-    'model__estimator__n_estimators': [30, 35]
-    'model__estimator__max_leaf_nodes' : [20, 25]
-    'model__estimator__min_samples_split': [20, 50]
+    'model__estimator__n_estimators': [40, 45]
+    'model__estimator__max_leaf_nodes' : [30, 35]
+    'model__estimator__min_samples_split': [30, 40]
     'model__estimator__max_features': ['sqrt']
     
