@@ -31,8 +31,8 @@ def train_model(config_file):
     columnas_config = config.get('columnas', [])
     # Lista de columnas establecidas en el archivo de configuración
     IGNORAR_COLS = columnas_config.get('ignorar', [])
-    NUM_COLS = columnas_config.get('num', [])
-    CAT_ORD_COLS = columnas_config.get('cat_ord', [])
+    NUM_COLS = columnas_config.get('num_cols', [])
+    CAT_ORD_COLS = columnas_config.get('cat_ord_cols', [])
     CAT_NOM_OHE_DROP_COLS = columnas_config.get('cat_nom_ohe_drop', [])
     CAT_NOM_OHE_COLS = columnas_config.get('cat_nom_ohe', [])
     CAT_NOM_OHE_FREC_COLS = columnas_config.get('cat_nom_frec', [])
