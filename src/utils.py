@@ -1,5 +1,9 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 class Feature_Engineering(BaseEstimator, TransformerMixin):
     ''' 
@@ -53,17 +57,40 @@ class Feature_Engineering(BaseEstimator, TransformerMixin):
         return X_new
 
 
-'''df_test = pd.DataFrame({
-    'age': [25, 45, 60],
-    'loan_amount': [10000, 20000, 15000],
-    'annual_income': [30000, 50000, 40000],
-    'delinquency_history': [0, 2, 1],
-    'num_of_delinquencies': [0, 2, 1],
-    'public_records': [0, 1, 0],
-    'installment': [300, 500, 400],
-    'monthly_income': [2500, 4000, 3500]
-})
+def save_confusion_matrix(y_test, y_pred, ruta_img):
+    """
+    Genera y muestra una matriz de confusión personalizada
+    con la disposición [[TP, FN], [FP, TN]].
+    """
 
-fe = Feature_Engineering(age_bins=[0,30,50,100], age_labels=['joven','adulto','mayor'])
-df_result = fe.transform(df_test)
-print(df_result)'''
+    cm = confusion_matrix(y_test, y_pred)
+
+    TN, FP = cm[0, 0], cm[0, 1]
+    FN, TP = cm[1, 0], cm[1, 1]
+
+    cm_custom = np.array([
+        [TP, FN],
+        [FP, TN]
+    ])
+
+    cm_df = pd.DataFrame(
+        cm_custom,
+        index=['Pred Positivo', 'Pred Negativo'],
+        columns=['Real Positivo', 'Real Negativo']
+    )
+
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(
+        cm_custom,
+        annot=True,
+        fmt='d',
+        cmap='Blues',
+        xticklabels=['Real +', 'Real -'],
+        yticklabels=['Pred +', 'Pred -']
+    )
+
+    plt.xlabel('Clase real')
+    plt.ylabel('Clase predicha')
+    plt.title('Matriz de Confusión (TP FN / FP TN)')
+    plt.tight_layout()
+    plt.savefig(ruta_img)

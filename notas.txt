@@ -83,3 +83,6 @@ clase FeatureEngineering.
 las numéricas pueden escalarse (si configuras scale_numeric: true) o 
 simplemente pasarse sin cambios; las ordinales como age_group deben 
 codificarse con OrdinalEncoder y sus categorías definidas en ordinal_categories.
+
+4152 3141 3826 8878
+Bancomer

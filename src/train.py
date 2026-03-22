@@ -10,6 +10,12 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import RandomizedSearchCV
 from pipelines import build_full_pipeline
+from datetime import datetime
+
+from utils import save_confusion_matrix, save_medidas_biclase
+import joblib
+import json
+
 
 def train_model(config_file):
     '''
@@ -145,7 +151,6 @@ def train_model(config_file):
     logger.info(f'   verbose: {verbose}')
     logger.info(f'   error_score: {error_score}')
 
-
     # Construir el RandomizedSearchCV
     grid = RandomizedSearchCV(
         estimator = pipeline,
@@ -158,9 +163,83 @@ def train_model(config_file):
         error_score = error_score,
         random_state = seed
         )
-        
-    print('bien')
-    pass
+    
+    # Entrenamiento
+    start_time = datetime.now()
+    try:
+        logger.info('Inicio del entrenamiento')
+        grid.fit(X_train, y_train)
+        total_time = datetime.now() - start_time
+        logger.info(f'Final del entrenamiento en: {total_time}')    
+    except Exception as e:
+        logger.error(f'Error: {str(e)}')
+        raise
+
+    # Resultados del entrenamiento
+    try:
+        logger.info(f'Mejores parámetros:')
+        for param, value in grid.best_params_.items():
+            logger.info(f'          {param}: {value}')            
+        logger.info(f'Mejor score:  {np.round(grid.best_score_, 4)}')
+        best_model = grid.best_estimator_
+        logger.info('Mejor modelo obtenido del RandomizedSearchCV')
+    except Exception as e:
+        logger.error(f'Error en los resultados del grid: {str(e)}')
+        raise
+
+    # Evaluación del modelo
+    try:
+        y_pred = best_model.predict(X_test)
+        if hasattr(best_model, 'predict_proba'):
+            y_proba = best_model.predict_proba(X_test)[:, 1]
+            logger.info('Probabilidades obtenidas correctamente')        
+    except Exception as e:
+        logger.error(f'Falla en la evaluacion del modelo {str(e)}')
+        raise
+
+    # REGISTRAR LA MATRIZ
+    try:
+        ruta_img = str(METADATA_DIR) + "/" + config['experiment_name'] + '_matriz' + '.png'
+        save_confusion_matrix(y_test, y_pred, ruta_img)
+        logger.info('Matriz de confusión guardada exitosamente')
+    except Exception as e:
+        logger.error(f'Falla en el registro de la matriz {str(e)}')
+        raise
+
+    # REGISTRAR LAS MEDIDAS
+    try:
+        ruta_medidas = str(METADATA_DIR) + "/" + config['experiment_name'] + '_medidas' + '.csv'
+        medidas = save_medidas_biclase(y_test, y_pred, ruta_medidas)
+        logger.info('Medidas de desempeño guardadas exitosamente')
+    except Exception as e:
+        logger.error(f'Falla en el registro de las medidas de desempeño{str(e)}')
+        raise
+
+    # REGISTRAR LOS METADATOS EN UN JSON
+    try:
+        ruta_metadatos = str(METADATA_DIR) + "/" + config['experiment_name'] + '.json'
+        metadata = {
+        "best_params": grid.best_params_,
+        "best_score": grid.best_score_,
+        "scoring": medidas.to_dict()}
+        with open(ruta_metadatos, 'w') as f:
+            json.dump(metadata, f, indent = 4)
+            logger.info('Metadatos registrados correctamente')
+    except Exception as e:
+        logger.error(f'Error durante el registro de los metadatos: {str(e)}')
+        raise
+
+    # REGISTRAR EL MODELO
+    try:
+        ruta_modelo = str(MODEL_DIR) + "/" + config['experiment_name'] + '.pkl'
+        joblib.dump(best_model, str(ruta_modelo))
+        logger.info(f"Modelo {str(config['experiment_name'])} guardado exitosamente")
+    except Exception as e:
+        logger.error(f'Falla guardando el modelo: {str(e)}')
+        raise
+
+    logger.info('Metadatos registrados exitosamente')
+    print('=='*50)
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent.parent
