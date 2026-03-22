@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import (accuracy_score, recall_score, balanced_accuracy_score, precision_score, f1_score, matthews_corrcoef)
+
 
 class Feature_Engineering(BaseEstimator, TransformerMixin):
     ''' 
@@ -94,3 +96,29 @@ def save_confusion_matrix(y_test, y_pred, ruta_img):
     plt.title('Matriz de Confusión (TP FN / FP TN)')
     plt.tight_layout()
     plt.savefig(ruta_img)
+
+def save_medidas_biclase(y_test, y_pred, ruta_medidas):
+    '''
+    Calculas las medidas de desempeño solicitadas en las instrucciones
+    regresa una tabla con las medidas
+    '''
+
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0 
+
+    metrics = {
+
+        'Accuracy': np.round(accuracy_score(y_test, y_pred), 4),
+        'Error Rate': np.round(1 - accuracy_score(y_test, y_pred), 4),
+        'Recall (Sensitivity)': np.round(recall_score(y_test, y_pred), 4),
+        'Specificity': np.round(specificity, 4),
+        'Balanced Accuracy': np.round(balanced_accuracy_score(y_test, y_pred), 4),
+        'Precision': np.round(precision_score(y_test, y_pred), 4),
+        'F1 Score': np.round(f1_score(y_test, y_pred), 4),
+        'MCC': np.round(matthews_corrcoef(y_test, y_pred), 4)
+    }
+
+    #resultados =  pd.DataFrame(list(metrics.items()), columns = ['Medida', 'Valor'])
+    resultados = pd.DataFrame(metrics.items(), columns = ['Medida', 'Valor'])
+    resultados.to_csv(ruta_medidas)
+    return resultados
