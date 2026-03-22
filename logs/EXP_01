@@ -1,0 +1,199 @@
+2026-03-21 20:14:03,314 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:14:03,381 - INFO - Datos cargados correctamente
+2026-03-21 20:14:03,397 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:14:03,397 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:14:03,397 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:14:03,397 - INFO - 	y_train: (16000,)
+2026-03-21 20:14:03,397 - INFO - 	y_test : (4000,)
+2026-03-21 20:14:03,398 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:14:03,398 - INFO - 	0	 Ignoradas
+2026-03-21 20:14:03,398 - INFO - 	0	 Numericas
+2026-03-21 20:14:03,398 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:14:03,398 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:14:03,398 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:14:03,398 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:14:03,398 - INFO - Pipeline construido exitosamente
+2026-03-21 20:14:03,398 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:14:03,399 - INFO - Configuración de CV:
+2026-03-21 20:14:03,399 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:14:03,399 - INFO -    n_iter: [30]
+2026-03-21 20:14:03,399 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:14:03,399 - INFO -    cv_folds: [3]
+2026-03-21 20:14:03,399 - INFO -    n_jobs: [-1]
+2026-03-21 20:14:03,399 - INFO -    verbose: [1]
+2026-03-21 20:14:03,399 - INFO -    error_score: raise
+2026-03-21 20:14:03,399 - INFO - Inicio del entrenamiento
+2026-03-21 20:14:03,400 - ERROR - Error: The 'n_iter' parameter of RandomizedSearchCV must be an int in the range [1, inf). Got [30] instead.
+2026-03-21 20:14:23,958 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:14:24,023 - INFO - Datos cargados correctamente
+2026-03-21 20:14:24,038 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:14:24,038 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:14:24,038 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:14:24,039 - INFO - 	y_train: (16000,)
+2026-03-21 20:14:24,039 - INFO - 	y_test : (4000,)
+2026-03-21 20:14:24,039 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:14:24,039 - INFO - 	0	 Ignoradas
+2026-03-21 20:14:24,039 - INFO - 	0	 Numericas
+2026-03-21 20:14:24,039 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:14:24,039 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:14:24,039 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:14:24,039 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:14:24,039 - INFO - Pipeline construido exitosamente
+2026-03-21 20:14:24,039 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:14:24,039 - INFO - Configuración de CV:
+2026-03-21 20:14:24,039 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:14:24,039 - INFO -    n_iter: 30
+2026-03-21 20:14:24,039 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:14:24,039 - INFO -    cv_folds: [3]
+2026-03-21 20:14:24,039 - INFO -    n_jobs: [-1]
+2026-03-21 20:14:24,039 - INFO -    verbose: [1]
+2026-03-21 20:14:24,039 - INFO -    error_score: raise
+2026-03-21 20:14:24,039 - INFO - Inicio del entrenamiento
+2026-03-21 20:14:24,040 - ERROR - Error: The 'n_jobs' parameter of RandomizedSearchCV must be an instance of 'int' or None. Got [-1] instead.
+2026-03-21 20:14:44,384 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:14:44,443 - INFO - Datos cargados correctamente
+2026-03-21 20:14:44,461 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:14:44,461 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:14:44,461 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:14:44,461 - INFO - 	y_train: (16000,)
+2026-03-21 20:14:44,461 - INFO - 	y_test : (4000,)
+2026-03-21 20:14:44,461 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:14:44,461 - INFO - 	0	 Ignoradas
+2026-03-21 20:14:44,461 - INFO - 	0	 Numericas
+2026-03-21 20:14:44,461 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:14:44,461 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:14:44,461 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:14:44,461 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:14:44,462 - INFO - Pipeline construido exitosamente
+2026-03-21 20:14:44,462 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:14:44,462 - INFO - Configuración de CV:
+2026-03-21 20:14:44,462 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:14:44,462 - INFO -    n_iter: 30
+2026-03-21 20:14:44,462 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:14:44,462 - INFO -    cv_folds: [3]
+2026-03-21 20:14:44,462 - INFO -    n_jobs: -1
+2026-03-21 20:14:44,462 - INFO -    verbose: 1
+2026-03-21 20:14:44,462 - INFO -    error_score: raise
+2026-03-21 20:14:44,462 - INFO - Inicio del entrenamiento
+2026-03-21 20:14:44,495 - ERROR - Error: cannot unpack non-iterable int object
+2026-03-21 20:17:11,479 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:17:11,538 - INFO - Datos cargados correctamente
+2026-03-21 20:17:11,554 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:17:11,554 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:17:11,554 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:17:11,554 - INFO - 	y_train: (16000,)
+2026-03-21 20:17:11,554 - INFO - 	y_test : (4000,)
+2026-03-21 20:17:11,554 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:17:11,554 - INFO - 	0	 Ignoradas
+2026-03-21 20:17:11,554 - INFO - 	0	 Numericas
+2026-03-21 20:17:11,554 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:17:11,554 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:17:11,554 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:17:11,554 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:17:11,555 - INFO - Pipeline construido exitosamente
+2026-03-21 20:17:11,555 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:17:11,555 - INFO - Configuración de CV:
+2026-03-21 20:17:11,555 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:17:11,555 - INFO -    n_iter: 30
+2026-03-21 20:17:11,555 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:17:11,555 - INFO -    cv_folds: 3
+2026-03-21 20:17:11,555 - INFO -    n_jobs: -1
+2026-03-21 20:17:11,555 - INFO -    verbose: 1
+2026-03-21 20:17:11,555 - INFO -    error_score: raise
+2026-03-21 20:17:11,555 - INFO - Inicio del entrenamiento
+2026-03-21 20:17:16,809 - ERROR - Error: Found unknown categories ['Other', "Bachelor's", 'PhD', "Master's"] in column 0 during fit
+2026-03-21 20:20:49,411 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:20:49,471 - INFO - Datos cargados correctamente
+2026-03-21 20:20:49,485 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:20:49,485 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:20:49,485 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:20:49,485 - INFO - 	y_train: (16000,)
+2026-03-21 20:20:49,485 - INFO - 	y_test : (4000,)
+2026-03-21 20:20:49,486 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:20:49,486 - INFO - 	0	 Ignoradas
+2026-03-21 20:20:49,486 - INFO - 	0	 Numericas
+2026-03-21 20:20:49,486 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:20:49,486 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:20:49,486 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:20:49,486 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:20:49,486 - INFO - Pipeline construido exitosamente
+2026-03-21 20:20:49,486 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:20:49,486 - INFO - Configuración de CV:
+2026-03-21 20:20:49,486 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:20:49,486 - INFO -    n_iter: 30
+2026-03-21 20:20:49,486 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:20:49,486 - INFO -    cv_folds: 3
+2026-03-21 20:20:49,486 - INFO -    n_jobs: -1
+2026-03-21 20:20:49,486 - INFO -    verbose: 1
+2026-03-21 20:20:49,486 - INFO -    error_score: raise
+2026-03-21 20:20:49,486 - INFO - Inicio del entrenamiento
+2026-03-21 20:20:54,296 - ERROR - Error: Found unknown categories ['PhD', 'Other'] in column 0 during fit
+2026-03-21 20:23:11,482 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:23:11,543 - INFO - Datos cargados correctamente
+2026-03-21 20:23:11,557 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:23:11,557 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:23:11,558 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:23:11,558 - INFO - 	y_train: (16000,)
+2026-03-21 20:23:11,558 - INFO - 	y_test : (4000,)
+2026-03-21 20:23:11,558 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:23:11,558 - INFO - 	0	 Ignoradas
+2026-03-21 20:23:11,558 - INFO - 	0	 Numericas
+2026-03-21 20:23:11,558 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:23:11,558 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:23:11,558 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:23:11,558 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:23:11,558 - INFO - Pipeline construido exitosamente
+2026-03-21 20:23:11,558 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:23:11,558 - INFO - Configuración de CV:
+2026-03-21 20:23:11,558 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:23:11,558 - INFO -    n_iter: 30
+2026-03-21 20:23:11,558 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:23:11,558 - INFO -    cv_folds: 3
+2026-03-21 20:23:11,558 - INFO -    n_jobs: -1
+2026-03-21 20:23:11,558 - INFO -    verbose: 1
+2026-03-21 20:23:11,559 - INFO -    error_score: raise
+2026-03-21 20:23:11,559 - INFO - Inicio del entrenamiento
+2026-03-21 20:23:16,729 - ERROR - Error: Found unknown categories ['F5', 'B5', 'F4', 'E4', 'B4', 'E3', 'A5', 'B3', 'C4', 'D4', 'A3', 'D3', 'D5', 'A4', 'E5', 'C5', 'F3', 'C3'] in column 1 during fit
+2026-03-21 20:29:51,330 - INFO - Iniciando con el experimento EXP_01
+2026-03-21 20:29:51,391 - INFO - Datos cargados correctamente
+2026-03-21 20:29:51,408 - INFO - Validación del conjunto de datos realizada
+2026-03-21 20:29:51,408 - INFO - 	X_train: (16000, 21)
+2026-03-21 20:29:51,408 - INFO - 	X_test : (4000, 21)
+2026-03-21 20:29:51,408 - INFO - 	y_train: (16000,)
+2026-03-21 20:29:51,408 - INFO - 	y_test : (4000,)
+2026-03-21 20:29:51,409 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-21 20:29:51,409 - INFO - 	0	 Ignoradas
+2026-03-21 20:29:51,409 - INFO - 	0	 Numericas
+2026-03-21 20:29:51,409 - INFO - 	0	 Categoricas ordinales
+2026-03-21 20:29:51,409 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-21 20:29:51,409 - INFO - 	0	 Categoricas nominales ohe
+2026-03-21 20:29:51,409 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-21 20:29:51,409 - INFO - Pipeline construido exitosamente
+2026-03-21 20:29:51,409 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-21 20:29:51,409 - INFO - Configuración de CV:
+2026-03-21 20:29:51,409 - INFO -    Tipo: RandomizedSearchCV
+2026-03-21 20:29:51,409 - INFO -    n_iter: 30
+2026-03-21 20:29:51,409 - INFO -    scoring: matthews_corrcoef
+2026-03-21 20:29:51,409 - INFO -    cv_folds: 3
+2026-03-21 20:29:51,409 - INFO -    n_jobs: -1
+2026-03-21 20:29:51,409 - INFO -    verbose: 1
+2026-03-21 20:29:51,409 - INFO -    error_score: raise
+2026-03-21 20:29:51,409 - INFO - Inicio del entrenamiento
+2026-03-21 21:21:15,124 - INFO - Final del entrenamiento en: 0:51:23.714581
+2026-03-21 21:21:15,124 - INFO - Mejores parámetros:
+2026-03-21 21:21:15,124 - INFO -           model__n_jobs: -1
+2026-03-21 21:21:15,124 - INFO -           model__n_estimators: 500
+2026-03-21 21:21:15,124 - INFO -           model__max_samples: 0.5
+2026-03-21 21:21:15,125 - INFO -           model__estimator__n_estimators: 35
+2026-03-21 21:21:15,125 - INFO -           model__estimator__min_samples_split: 50
+2026-03-21 21:21:15,125 - INFO -           model__estimator__max_leaf_nodes: 25
+2026-03-21 21:21:15,125 - INFO -           model__estimator__max_features: sqrt
+2026-03-21 21:21:15,125 - INFO -           model__bootstrap: True
+2026-03-21 21:21:15,125 - INFO - Mejor score:  0.6205
+2026-03-21 21:21:15,125 - INFO - Mejor modelo obtenido del RandomizedSearchCV
+2026-03-21 21:21:27,334 - INFO - Probabilidades obtenidas correctamente
+2026-03-21 21:21:27,858 - INFO - Matriz de confusión guardada exitosamente
+2026-03-21 21:21:27,877 - INFO - Medidas de desempeño guardadas exitosamente
+2026-03-21 21:21:27,879 - INFO - Metadatos registrados correctamente
+2026-03-21 21:21:34,873 - INFO - Modelo EXP_01 guardado exitosamente
+2026-03-21 21:21:34,875 - INFO - Metadatos registrados exitosamente

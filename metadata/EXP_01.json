@@ -1,0 +1,35 @@
+{
+    "best_params": {
+        "model__n_jobs": -1,
+        "model__n_estimators": 500,
+        "model__max_samples": 0.5,
+        "model__estimator__n_estimators": 35,
+        "model__estimator__min_samples_split": 50,
+        "model__estimator__max_leaf_nodes": 25,
+        "model__estimator__max_features": "sqrt",
+        "model__bootstrap": true
+    },
+    "best_score": 0.6204834436074126,
+    "scoring": {
+        "Medida": {
+            "0": "Accuracy",
+            "1": "Error Rate",
+            "2": "Recall (Sensitivity)",
+            "3": "Specificity",
+            "4": "Balanced Accuracy",
+            "5": "Precision",
+            "6": "F1 Score",
+            "7": "MCC"
+        },
+        "Valor": {
+            "0": 0.889,
+            "1": 0.111,
+            "2": 0.9753,
+            "3": 0.5438,
+            "4": 0.7595,
+            "5": 0.8953,
+            "6": 0.9336,
+            "7": 0.6204
+        }
+    }
+}
