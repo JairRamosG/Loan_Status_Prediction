@@ -22,8 +22,6 @@ st.set_page_config(
 ###########################################################################################################
 # Cabecera
 ###########################################################################################################
-st.title('Loan Status Prediction', anchor=None, help=None, width="stretch", text_alignment="center")
-st.markdown("---") 
 # Inicializar estado
 if "pagina" not in st.session_state:
     st.session_state.pagina = "Inicio"
@@ -91,26 +89,19 @@ if st.session_state.pagina == "Inicio":
     # --- Fila de tarjetas resumen ---
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("""
-            <div class="card" style="text-align: center;">
-                <div class="big-number">📊 20k+</div>
-                <div class="metric-label">Registros analizados</div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.metric("Registros analizados",
+                    f"20k+",
+                    delta = 'Registrados')
+
     with col2:
-        st.markdown("""
-            <div class="card" style="text-align: center;">
-                <div class="big-number">⚙️ 15+</div>
-                <div class="metric-label">Características originales</div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.metric("Características",
+                    f"40+",
+                )
+
     with col3:
-        st.markdown("""
-            <div class="card" style="text-align: center;">
-                <div class="big-number">🎯 0.85</div>
-                <div class="metric-label">Precisión (mejor modelo)</div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.metric("Precision",
+                    f"0.8961",
+                    delta = 'Mejor modelo')
 
     # --- Descripción del problema y solución en dos columnas ---
     col_left, col_right = st.columns(2)
@@ -170,7 +161,7 @@ if st.session_state.pagina == "Inicio":
 
     def show_data_dictionary():
         # --- Variables originales ---
-        with st.expander("📁 Variables originales", expanded=False):
+        with st.expander("Variables originales", expanded=False):
             datos_originales = [
                 ("age", "NUM", "Discretizar (genera age_group)"),
                 ("gender", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
@@ -199,7 +190,7 @@ if st.session_state.pagina == "Inicio":
             st.dataframe(df_original, use_container_width=True, hide_index=True)
 
         # --- Variables finales ---
-        with st.expander("✅ Variables finales (después del pipeline)", expanded=False):
+        with st.expander("Variables finales (después del pipeline)", expanded=False):
             datos_finales = [
                 ("age_group", "CAT_ORD", "Grupos: joven, adulto_joven, adulto, adulto_mayor, 3_Edad"),
                 ("marital_status_*", "NUM(BIN)", "4 dummies: Divorced, Widowed, Married, Single"),
@@ -290,13 +281,13 @@ if st.session_state.pagina == "Inicio":
     col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
     # Puedes cargar estos valores desde el JSON de metadatos si lo prefieres
     with col_metric1:
-        st.metric("Precisión (Precision)", "0.85", "mejor que baseline")
+        st.metric("Precisión (Precision)", "0.8961", "medida de interés")
     with col_metric2:
-        st.metric("Recall", "0.78", "")
+        st.metric("Recall", "0.9784", "")
     with col_metric3:
-        st.metric("F1-score", "0.81", "")
+        st.metric("F1-score", "0.9355", "")
     with col_metric4:
-        st.metric("AUC-ROC", "0.89", "")
+        st.metric("Accuracy", "0.8920", "")
 
     # --- Créditos finales ---
     st.markdown("---")
@@ -304,7 +295,6 @@ if st.session_state.pagina == "Inicio":
         <div style="text-align: center; color: #9e9e9e; padding: 1rem;">
             <strong>Jair Ramos</strong> · 
             Repositorio en <a href="https://github.com/JairRamosG/Loan_Status_Prediction" target="_blank">GitHub</a> · 
-            Despliegue con Streamlit
         </div>
     """, unsafe_allow_html=True)
 
