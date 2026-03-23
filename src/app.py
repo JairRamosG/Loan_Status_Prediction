@@ -324,18 +324,32 @@ def plot_boxplots_numericas_vs_target(df, numeric_cols, target, cols=2, height_p
     
     return fig
 
-def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False, height_per_row=400):
+def plot_frecuencias_categoricas(
+    df,
+    categoric_cols,
+    show_percentage=False,
+    height_per_row=400,
+    theme='plotly_white'
+):
     """
-    Genera un grid de gráficos de barras horizontales interactivos para variables categóricas.
+    Genera un grid de gráficos de barras horizontales interactivos.
+    Cada categoría dentro de un mismo gráfico tiene un color diferente automático (usando la paleta del tema).
+    
+    Parámetros:
+        df: DataFrame
+        categoric_cols: lista de columnas categóricas
+        show_percentage: bool, si True muestra porcentaje en lugar de frecuencia absoluta
+        height_per_row: altura en píxeles por fila
+        theme: str, tema de Plotly ('plotly', 'plotly_white', 'ggplot2', 'seaborn', 'plotly_dark', etc.)
     """
     n = len(categoric_cols)
-    cols = 2
+    cols = 2 if n > 1 else 1
     rows = math.ceil(n / cols)
     
     # Crear subplots
     fig = make_subplots(
         rows=rows, cols=cols,
-        subplot_titles=categoric_cols,   # títulos se asignan directamente
+        subplot_titles=[col for col in categoric_cols],   # títulos de cada subplot
         horizontal_spacing=0.1,
         vertical_spacing=0.15
     )
@@ -343,10 +357,10 @@ def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False, heig
     total = len(df)
     
     for i, col in enumerate(categoric_cols):
-        # Calcular frecuencias y ordenar de mayor a menor
+        # Calcular frecuencias y ordenar de mayor a menor (para barras horizontales ascendente)
         counts = df[col].value_counts().reset_index()
         counts.columns = [col, 'count']
-        counts = counts.sort_values('count', ascending=True)  # ascendente para que la barra más alta quede arriba en horizontal
+        counts = counts.sort_values('count', ascending=True)  # ascendente para que la barra más grande quede arriba
         
         categories = counts[col].tolist()
         frequencies = counts['count'].tolist()
@@ -363,6 +377,7 @@ def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False, heig
         row = i // cols + 1
         col_idx = i % cols + 1
         
+        # IMPORTANTE: NO fijamos un color único. Plotly usará la paleta del tema.
         fig.add_trace(
             go.Bar(
                 y=categories,
@@ -370,7 +385,7 @@ def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False, heig
                 orientation='h',
                 text=text,
                 textposition='outside',
-                marker=dict(color='#4C72B0', line=dict(color='black', width=1)),
+                marker=dict(line=dict(color='black', width=1)),   # sin color fijo
                 hovertemplate='%{hovertext}<extra></extra>',
                 hovertext=hover_text,
                 showlegend=False
@@ -378,42 +393,151 @@ def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False, heig
             row=row, col=col_idx
         )
         
-        # Personalizar ejes
+        # Etiquetas de ejes
         fig.update_xaxes(title_text="Frecuencia" if not show_percentage else "Porcentaje (%)", row=row, col=col_idx)
         fig.update_yaxes(title_text=col, row=row, col=col_idx)
     
-    # Ocultar títulos de subplots vacíos (si los hay)
-    # Iteramos sobre las anotaciones que contienen los títulos de subplots
-    # y las ocultamos si no hay trazos en ese subplot
+    # Eliminar títulos de subplots que no existen (si hay menos variables que subplots)
+    # (En nuestro caso, no hay subplots vacíos porque la cuadrícula se ajusta exactamente al número de columnas,
+    # pero por si acaso, lo dejamos para evitar títulos huérfanos)
     for r in range(1, rows+1):
         for c in range(1, cols+1):
-            # Verificar si el subplot (r,c) tiene algún trace
+            # Verificar si este subplot tiene algún trace
             has_trace = False
             for trace in fig.data:
-                # En Plotly, los subplots se identifican por los campos xaxis, yaxis
-                # pero es más simple usar la posición esperada
                 if trace.xaxis == f"x{r}" and trace.yaxis == f"y{r}":
                     has_trace = True
                     break
             if not has_trace:
-                # Buscar la anotación correspondiente y eliminarla o poner texto vacío
-                # Las anotaciones de títulos de subplots tienen `xref='paper'` y `yref='paper'`,
-                # pero también tienen un texto que coincide con la columna que se esperaba.
-                # La forma más directa: no hacer nada (dejar el subplot vacío sin título)
-                # Si queremos eliminar el título, podemos hacer:
+                # Buscar la anotación correspondiente y ocultarla
                 idx = (r-1)*cols + (c-1)
                 if idx < len(fig.layout.annotations):
                     fig.layout.annotations[idx].text = ""
     
     total_height = rows * height_per_row
     fig.update_layout(
-        title_text="Distribución de Variables Categóricas",
+        title_text="Distribución de Variables Categóricas" if n > 1 else None,
         title_x=0.5,
         height=total_height,
-        template='plotly_white',
-        margin=dict(t=80, b=40, l=40, r=40)
+        template=theme,                # El tema controla los colores de las barras y el estilo general
+        margin=dict(t=80 if n > 1 else 40, b=40, l=40, r=40)
     )
     
+    return fig
+
+def plot_crosstab_categoricas_interactive(
+    df,
+    categoric_cols,
+    target,
+    ylabel="Proporción",
+    label_pos="Pagó",
+    label_neg="No pagó",
+    rotation=30,
+    colors=None,
+    theme='plotly_white',
+    height_per_row=400
+):
+    """
+    Genera un grid de gráficos de barras apiladas interactivos para variables categóricas,
+    mostrando la proporción de la variable objetivo en cada categoría.
+
+    Parámetros:
+        df: DataFrame
+        categoric_cols: lista de columnas categóricas a analizar
+        target: nombre de la variable objetivo (binaria)
+        ylabel: etiqueta del eje Y
+        label_pos: nombre de la clase positiva (usado en leyenda)
+        label_neg: nombre de la clase negativa
+        rotation: ángulo de rotación de las etiquetas del eje X (grados)
+        colors: lista de colores para las dos clases [color_neg, color_pos] (ej. ['#e74c3c', '#2ecc71'])
+        theme: tema de Plotly ('plotly', 'plotly_white', 'ggplot2', etc.)
+        height_per_row: altura en píxeles por fila
+    """
+    n = len(categoric_cols)
+    cols = 2
+    rows = math.ceil(n / cols)
+
+    # Colores por defecto si no se especifican
+    if colors is None:
+        colors = ['#e74c3c', '#2ecc71']  # rojo para negativos, verde para positivos
+
+    # Crear subplots
+    fig = make_subplots(
+        rows=rows, cols=cols,
+        subplot_titles=[col for col in categoric_cols],
+        horizontal_spacing=0.1,
+        vertical_spacing=0.15
+    )
+
+    # Determinar el orden de clases (suponemos binario)
+    classes = sorted(df[target].unique())
+    # Asignar colores: primero clase negativa, luego positiva
+    if len(classes) == 2:
+        color_map = {classes[0]: colors[0], classes[1]: colors[1]}
+    else:
+        # Si hay más de 2, usar paleta extendida (pero esperamos binario)
+        from plotly.express.colors import qualitative
+        palette = qualitative.Plotly
+        color_map = {cls: palette[i % len(palette)] for i, cls in enumerate(classes)}
+
+    for i, col in enumerate(categoric_cols):
+        # Calcular proporciones por categoría
+        crosstab = pd.crosstab(df[col], df[target], normalize='index') * 100  # porcentajes
+        crosstab = crosstab.reset_index()
+        categories = crosstab[col].tolist()
+        # Para cada clase, añadir una barra (apilada)
+        for cls in classes:
+            values = crosstab[cls].tolist() if cls in crosstab.columns else [0]*len(categories)
+            # Evitar texto cuando valor es 0 (para que no aparezca etiqueta)
+            text = [f"{v:.1f}%" if v > 0 else "" for v in values]
+
+            row = i // cols + 1
+            col_idx = i % cols + 1
+
+            fig.add_trace(
+                go.Bar(
+                    x=categories,
+                    y=values,
+                    name=str(cls) if i == 0 else None,  # mostrar leyenda solo en el primer subplot
+                    text=text,
+                    textposition='inside',
+                    textfont=dict(size=10),
+                    marker=dict(color=color_map[cls]),
+                    showlegend=(i == 0),   # solo una leyenda global
+                    legendgroup=str(cls)   # agrupar por clase
+                ),
+                row=row, col=col_idx
+            )
+
+        # Personalizar ejes y rotación de etiquetas X
+        fig.update_xaxes(title_text=col, tickangle=rotation, row=row, col=col_idx)
+        fig.update_yaxes(title_text=ylabel, row=row, col=col_idx)
+
+    # Ajustar layout general
+    total_height = rows * height_per_row
+    fig.update_layout(
+        #title_text="Proporción de Pago del Préstamo por Variables Categóricas",
+        #title_x=0.5,
+        height=total_height,
+        template=theme,
+        barmode='stack',               # apilado
+        legend_title="Estado del préstamo",
+        margin=dict(t=80, b=40, l=40, r=40)
+    )
+
+    # Personalizar nombres de leyenda si se proporcionan
+    if label_neg and label_pos and len(classes) == 2:
+        # Renombrar leyenda (por defecto usa los valores originales de la columna target)
+        # Plotly asigna los nombres automáticamente; podemos cambiarlos en la leyenda
+        # Pero como añadimos los traces con name=str(cls), podemos mapear los nombres.
+        # Es más fácil pasar los nombres deseados a través de los parámetros.
+        # Vamos a reasignar los nombres de los traces manualmente:
+        for trace in fig.data:
+            if trace.name == str(classes[0]):
+                trace.name = label_neg
+            elif trace.name == str(classes[1]):
+                trace.name = label_pos
+
     return fig
 
 
@@ -647,13 +771,30 @@ elif st.session_state.pagina == "Análisis":
     st.plotly_chart(fig, width='stretch')
 
 
-    st.subheader("Algunas variables categóricas")
+    
+    st.subheader("Distribución de variables categóricas")
     categoric_cols = ['gender', 'marital_status', 'education_level', 'loan_purpose']
 
-    st.subheader("Distribución de variables categóricas")
-    for col in numeric_cols:
-        fig = plot_frecuencias_categoricas(data, categoric_cols, show_percentage=True)
-    st.plotly_chart(fig,  width='stretch')
+    for col in categoric_cols:
+        fig = plot_frecuencias_categoricas(
+            df=data,
+            categoric_cols=[col],
+            show_percentage=True,
+            theme='plotly_white')
+        st.plotly_chart(fig, key=f"categ_{col}", width='stretch')
+
+    st.subheader("Proporción de pago por variables categóricas")
+    fig = plot_crosstab_categoricas_interactive(
+        df=data,
+        categoric_cols=categoric_cols,
+        target='loan_paid_back',
+        label_pos="Pagó",
+        label_neg="No pagó",
+        rotation=30,
+        colors=['#e74c3c', '#2ecc71'],   # rojo (no pagó), verde (pagó)
+        theme='plotly_white'
+    )
+    st.plotly_chart(fig, key="crosstab_categoricas", use_container_width=True)
 
 ###########################################################################################################
 # APP
