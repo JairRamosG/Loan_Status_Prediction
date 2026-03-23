@@ -5,12 +5,12 @@ import os
 
 from pathlib import Path
 from datetime import date, datetime
+import math
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
-
 
 # INICIO
 def show_home():
@@ -150,7 +150,7 @@ def alimentar_pipeline(datos_usuario):
     return df
 
 # ANÁLISIS
-def plot_hist_variable_binaria_interactivo(df, variable, title, xlabel, label1, label2, subtitle):
+def plot_hist_variable_binaria(df, variable, title, xlabel, label1, label2, subtitle):
     # Obtener conteos
     counts = df[variable].value_counts().reset_index()
     counts.columns = [variable, 'count']
@@ -167,10 +167,7 @@ def plot_hist_variable_binaria_interactivo(df, variable, title, xlabel, label1, 
     fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', title_x = 0.5)
     return fig
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-def plot_distribucion_box_interactive(df, numeric_cols, bins=30):
+def plot_distribucion_box(df, numeric_cols, bins=30):
     for col in numeric_cols:
         mean_val = df[col].mean()
         median_val = df[col].median()
@@ -220,7 +217,7 @@ def plot_distribucion_box_interactive(df, numeric_cols, bins=30):
                 marker_color='#55A868',
                 line=dict(color='#2E6B3E', width=2),
                 fillcolor='#B3E0B3',
-                boxmean='sd',
+                boxmean=False,
                 boxpoints='outliers',      # muestra outliers
                 jitter=0,                  # sin dispersión horizontal
                 pointpos=0,                # puntos alineados con la caja
@@ -256,6 +253,169 @@ def plot_distribucion_box_interactive(df, numeric_cols, bins=30):
         fig.update_yaxes(title_text="", row=1, col=2)
 
         yield col, fig
+
+def plot_boxplots_numericas_vs_target(df, numeric_cols, target, cols=2, height_per_row=300):
+    """
+    Genera un grid de boxplots horizontales interactivos (cada variable numérica vs la variable objetivo).
+    Devuelve una figura de Plotly lista para st.plotly_chart().
+    """
+    n = len(numeric_cols)
+    rows = math.ceil(n / cols)
+    
+    # Crear subplots con una columna para cada variable
+    fig = make_subplots(
+        rows=rows, cols=cols,
+        subplot_titles=[col for col in numeric_cols],
+        horizontal_spacing=0.1,
+        vertical_spacing=0.12
+    )
+    
+    # Detectar clases automáticamente
+    clases = sorted(df[target].unique())
+    # Asignar colores (rojo para la primera clase, verde para la última)
+    color_map = {clases[0]: '#e74c3c', clases[-1]: '#55A868'}
+    
+    # Si hay más de 2 clases, asignar colores con una paleta
+    if len(clases) > 2:
+        from plotly.express.colors import qualitative
+        palette = qualitative.Plotly
+        color_map = {cls: palette[i % len(palette)] for i, cls in enumerate(clases)}
+    
+    for i, col in enumerate(numeric_cols):
+        row = i // cols + 1
+        col_idx = i % cols + 1
+        
+        # Para cada clase, crear un trace de boxplot (orientación horizontal)
+        for cls in clases:
+            subset = df[df[target] == cls][col]
+            if not subset.empty:
+                fig.add_trace(
+                    go.Box(
+                        x=subset,
+                        name=str(cls),            # nombre de la clase
+                        orientation='h',
+                        boxmean=False,            # sin línea de media (evita cuadrado extra)
+                        boxpoints='outliers',     # mostrar outliers
+                        jitter=0.2,
+                        pointpos=0,
+                        marker=dict(color=color_map[cls]),
+                        legendgroup=str(cls),     # agrupar leyenda
+                        showlegend=(i == 0)       # mostrar leyenda solo una vez
+                    ),
+                    row=row, col=col_idx
+                )
+    
+    # Ajustar layout general
+    fig.update_layout(
+        #title_text=f"Distribución de variables numéricas según {target}",
+        #title_x=0.5,
+        height=rows * height_per_row,
+        showlegend=True,
+        legend_title=target,
+        template='plotly_white'
+    )
+    
+    # Mejorar apariencia de cada subplot
+    fig.update_xaxes(title_text="Valor", row=row, col=col_idx)  # solo el último? se aplicará a todos
+    for i in range(1, rows+1):
+        for j in range(1, cols+1):
+            fig.update_xaxes(title_text="Valor", row=i, col=j)
+            fig.update_yaxes(title_text=target, row=i, col=j)
+    
+    return fig
+
+def plot_frecuencias_categoricas(df, categoric_cols, show_percentage=False, height_per_row=400):
+    """
+    Genera un grid de gráficos de barras horizontales interactivos para variables categóricas.
+    """
+    n = len(categoric_cols)
+    cols = 2
+    rows = math.ceil(n / cols)
+    
+    # Crear subplots
+    fig = make_subplots(
+        rows=rows, cols=cols,
+        subplot_titles=categoric_cols,   # títulos se asignan directamente
+        horizontal_spacing=0.1,
+        vertical_spacing=0.15
+    )
+    
+    total = len(df)
+    
+    for i, col in enumerate(categoric_cols):
+        # Calcular frecuencias y ordenar de mayor a menor
+        counts = df[col].value_counts().reset_index()
+        counts.columns = [col, 'count']
+        counts = counts.sort_values('count', ascending=True)  # ascendente para que la barra más alta quede arriba en horizontal
+        
+        categories = counts[col].tolist()
+        frequencies = counts['count'].tolist()
+        
+        if show_percentage:
+            values = [(freq / total) * 100 for freq in frequencies]
+            hover_text = [f"{cat}: {freq} ({val:.1f}%)" for cat, freq, val in zip(categories, frequencies, values)]
+            text = [f"{val:.1f}%" for val in values]
+        else:
+            values = frequencies
+            hover_text = [f"{cat}: {freq}" for cat, freq in zip(categories, frequencies)]
+            text = [str(val) for val in values]
+        
+        row = i // cols + 1
+        col_idx = i % cols + 1
+        
+        fig.add_trace(
+            go.Bar(
+                y=categories,
+                x=values,
+                orientation='h',
+                text=text,
+                textposition='outside',
+                marker=dict(color='#4C72B0', line=dict(color='black', width=1)),
+                hovertemplate='%{hovertext}<extra></extra>',
+                hovertext=hover_text,
+                showlegend=False
+            ),
+            row=row, col=col_idx
+        )
+        
+        # Personalizar ejes
+        fig.update_xaxes(title_text="Frecuencia" if not show_percentage else "Porcentaje (%)", row=row, col=col_idx)
+        fig.update_yaxes(title_text=col, row=row, col=col_idx)
+    
+    # Ocultar títulos de subplots vacíos (si los hay)
+    # Iteramos sobre las anotaciones que contienen los títulos de subplots
+    # y las ocultamos si no hay trazos en ese subplot
+    for r in range(1, rows+1):
+        for c in range(1, cols+1):
+            # Verificar si el subplot (r,c) tiene algún trace
+            has_trace = False
+            for trace in fig.data:
+                # En Plotly, los subplots se identifican por los campos xaxis, yaxis
+                # pero es más simple usar la posición esperada
+                if trace.xaxis == f"x{r}" and trace.yaxis == f"y{r}":
+                    has_trace = True
+                    break
+            if not has_trace:
+                # Buscar la anotación correspondiente y eliminarla o poner texto vacío
+                # Las anotaciones de títulos de subplots tienen `xref='paper'` y `yref='paper'`,
+                # pero también tienen un texto que coincide con la columna que se esperaba.
+                # La forma más directa: no hacer nada (dejar el subplot vacío sin título)
+                # Si queremos eliminar el título, podemos hacer:
+                idx = (r-1)*cols + (c-1)
+                if idx < len(fig.layout.annotations):
+                    fig.layout.annotations[idx].text = ""
+    
+    total_height = rows * height_per_row
+    fig.update_layout(
+        title_text="Distribución de Variables Categóricas",
+        title_x=0.5,
+        height=total_height,
+        template='plotly_white',
+        margin=dict(t=80, b=40, l=40, r=40)
+    )
+    
+    return fig
+
 
 # rutas
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -461,7 +621,7 @@ elif st.session_state.pagina == "Análisis":
     st.dataframe(data.describe(include='all').T, use_container_width=True)
 
     st.subheader("Distribución de la variable objetivo")
-    fig = plot_hist_variable_binaria_interactivo(
+    fig = plot_hist_variable_binaria(
         data,
         'loan_paid_back', 
         'Estado del préstamo',
@@ -472,9 +632,28 @@ elif st.session_state.pagina == "Análisis":
 
     st.subheader("Algunas variables numéricas")
     numeric_cols = ['age', 'annual_income', 'credit_score', 'total_credit_limit']
-    for col, fig in plot_distribucion_box_interactive(data, numeric_cols, bins=30):
-        st.subheader(f"Análisis de {col}")
+    for col, fig in plot_distribucion_box(data, numeric_cols, bins=30):
+        st.subheader(f" > {col}")
         st.plotly_chart(fig, width='stretch')
+
+    st.subheader("Variables según el target")
+    for col in numeric_cols:
+        fig = plot_boxplots_numericas_vs_target(
+        df=data,
+        numeric_cols=numeric_cols,
+        target='loan_paid_back',
+        cols=2,
+        height_per_row=300)
+    st.plotly_chart(fig, width='stretch')
+
+
+    st.subheader("Algunas variables categóricas")
+    categoric_cols = ['gender', 'marital_status', 'education_level', 'loan_purpose']
+
+    st.subheader("Distribución de variables categóricas")
+    for col in numeric_cols:
+        fig = plot_frecuencias_categoricas(data, categoric_cols, show_percentage=True)
+    st.plotly_chart(fig,  width='stretch')
 
 ###########################################################################################################
 # APP
