@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
 
-paleta = 'inferno' # 'Plasma', 'Inferno', 'Magma', 'YlGnBu', 'viridis', 'Turbo', 'plotly3', 'Pastel1'
+paleta = 'viridis' # 'Plasma', 'Inferno', 'Magma', 'YlGnBu', 'viridis', 'Turbo', 'plotly3', 'Pastel1'
 
 # INICIO
 def show_home():
@@ -161,22 +161,23 @@ def plot_pie_binaria(
     label2,
     subtitle=None,
     colors=None,
+    outline_colors=None,
     height=500,
     width=600,
-    hole=0.3          # para hacer un donut (0 = pastel completo, >0 = donut)
+    hole=0.3
 ):
     """
     Genera un gráfico de pastel interactivo para una variable binaria,
-    con colores suaves tipo pastel.
+    con colores suaves y contorno en tonos más oscuros.
 
     Parámetros:
         df: DataFrame
         variable: nombre de la columna binaria (valores 0/1)
-        title: título de la gráfica
         label1: etiqueta para la clase positiva (1)
         label2: etiqueta para la clase negativa (0)
         subtitle: subtítulo (opcional)
-        colors: lista de colores personalizados (si es None, usa colores pastel)
+        colors: lista de colores personalizados (si es None, usa rojo/verde pastel)
+        outline_colors: lista de colores para el contorno (si es None, usa tonos más oscuros)
         height: altura de la figura
         width: ancho de la figura
         hole: tamaño del agujero central (0 = pastel, 0.3 = donut)
@@ -189,21 +190,17 @@ def plot_pie_binaria(
     total = counts['count'].sum()
     counts['percentage'] = (counts['count'] / total * 100).round(1)
     
-    # Mapear etiquetas
     labels_map = {1: label1, 0: label2}
     counts['etiqueta'] = counts[variable].map(labels_map)
     
-    # Colores pastel predeterminados (suaves y agradables)
-    default_colors = ['#e74c3c', '#2ecc71']  # rosa pastel, verde menta pastel
-    # También puedes usar estos otros:
-    # ['#FFD1DC', '#C1E1C1'] - rosa claro, verde claro
-    # ['#FFB7B2', '#B5E3D5'] - melón, menta
-    # ['#FADADD', '#D4F1F9'] - rosa pálido, azul cielo
-    
+    default_colors = ['#e74c3c', '#2ecc71']  
     if colors is None:
         colors = default_colors
     
-    # Crear gráfico de pastel
+    default_outline_colors = ['#c0392b', '#27ae60']  
+    if outline_colors is None:
+        outline_colors = default_outline_colors
+    
     fig = px.pie(
         counts,
         values='count',
@@ -215,12 +212,18 @@ def plot_pie_binaria(
         width=width
     )
     
-    # Personalizar el texto dentro del gráfico
+    # Personalizar el texto dentro del gráfico y el contorno
     fig.update_traces(
         textposition='inside',
         textinfo='percent+label',
         textfont_size=14,
-        marker=dict(line=dict(color='white', width=2)),
+        textfont_color='white',          # texto blanco para mejor contraste
+        marker=dict(
+            line=dict(
+                color=outline_colors,    # contorno en tonos oscuros
+                width=3                  # grosor del contorno
+            )
+        ),
         hovertemplate='<b>%{label}</b><br>Frecuencia: %{value}<br>Porcentaje: %{percent:.1f}%<extra></extra>'
     )
     
@@ -228,9 +231,9 @@ def plot_pie_binaria(
     fig.update_layout(
         title_x=0.5,
         title_font_size=16,
-        showlegend=False,  # ya tenemos etiquetas dentro
+        showlegend=False,                # ya tenemos etiquetas dentro
         margin=dict(l=40, r=40, t=80, b=40),
-        annotations=[]  # limpiar anotaciones automáticas
+        annotations=[]                   # limpiar anotaciones automáticas
     )
     
     # Añadir subtítulo si se proporciona
@@ -251,19 +254,20 @@ def plot_pie_binaria(
     
     # Añadir total en el centro (opcional, solo para donut)
     if hole > 0:
-        fig.update_layout(
-            annotations=[
-                dict(
-                    text=f"Total<br>{total}",
-                    x=0.5,
-                    y=0.5,
-                    font_size=16,
-                    showarrow=False,
-                    font=dict(size=14, weight='bold')
-                )
-            ]
+        # Crear texto central con el total
+        center_text = f"Total<br>{total:,}"
+        
+        # Configurar anotaciones del centro
+        center_annotation = dict(
+            text=center_text,
+            x=0.5,
+            y=0.5,
+            font_size=16,
+            showarrow=False,
+            font=dict(size=14, weight='bold', color="#92beea")
         )
-        # Si también hay subtítulo, combinar anotaciones
+        
+        # Combinar anotaciones
         if subtitle:
             fig.update_layout(
                 annotations=[
@@ -276,16 +280,11 @@ def plot_pie_binaria(
                         showarrow=False,
                         font=dict(size=12, color="gray")
                     ),
-                    dict(
-                        text=f"Total<br>{total}",
-                        x=0.5,
-                        y=0.5,
-                        font_size=16,
-                        showarrow=False,
-                        font=dict(size=14, weight='bold')
-                    )
+                    center_annotation
                 ]
             )
+        else:
+            fig.update_layout(annotations=[center_annotation])
     
     return fig
 
@@ -487,7 +486,8 @@ def plot_categorical(df, col, show_percentage=False, palette='Viridis', height=5
     fig.update_traces(
         textposition='outside',
         marker_line_color='black',
-        marker_line_width=1
+        marker_line_width=1,
+        showlegend = False
     )
     fig.update_layout(
         title=None,                    # Sin título general
@@ -500,119 +500,116 @@ def plot_categorical(df, col, show_percentage=False, palette='Viridis', height=5
     fig.update_layout(width=800)
     return fig
 
-def plot_crosstab_categoricas_interactive(
+def plot_crosstab_single(
     df,
-    categoric_cols,
+    col,
     target,
-    ylabel="Proporción",
+    ylabel="Proporción (%)",
     label_pos="Pagó",
     label_neg="No pagó",
     rotation=30,
     colors=None,
+    outline_colors=None,
     theme='plotly_white',
-    height_per_row=400
+    height=500,
+    width=800
 ):
     """
-    Genera un grid de gráficos de barras apiladas interactivos para variables categóricas,
+    Genera un gráfico de barras apiladas interactivo para una variable categórica,
     mostrando la proporción de la variable objetivo en cada categoría.
 
     Parámetros:
         df: DataFrame
-        categoric_cols: lista de columnas categóricas a analizar
+        col: nombre de la columna categórica
         target: nombre de la variable objetivo (binaria)
         ylabel: etiqueta del eje Y
-        label_pos: nombre de la clase positiva (usado en leyenda)
+        label_pos: nombre de la clase positiva
         label_neg: nombre de la clase negativa
         rotation: ángulo de rotación de las etiquetas del eje X (grados)
-        colors: lista de colores para las dos clases [color_neg, color_pos] (ej. ['#e74c3c', '#2ecc71'])
+        colors: lista de colores [color_neg, color_pos] (default: ['#e74c3c', '#2ecc71'])
+        outline_colors: lista de colores para el contorno (default: ['#c0392b', '#27ae60'])
         theme: tema de Plotly ('plotly', 'plotly_white', 'ggplot2', etc.)
-        height_per_row: altura en píxeles por fila
+        height: altura de la figura
+        width: ancho de la figura
+    Returns:
+        fig: plotly.graph_objects.Figure
     """
-    n = len(categoric_cols)
-    cols = 2
-    rows = math.ceil(n / cols)
-
-    # Colores por defecto si no se especifican
+    # Colores por defecto
     if colors is None:
         colors = ['#e74c3c', '#2ecc71']  # rojo para negativos, verde para positivos
-
-    # Crear subplots
-    fig = make_subplots(
-        rows=rows, cols=cols,
-        subplot_titles=[col for col in categoric_cols],
-        horizontal_spacing=0.1,
-        vertical_spacing=0.15
-    )
-
-    # Determinar el orden de clases (suponemos binario)
+    
+    # Colores de contorno por defecto (tonos más oscuros)
+    if outline_colors is None:
+        outline_colors = ['#c0392b', '#27ae60']  # rojo oscuro, verde oscuro
+    
+    # Detectar clases
     classes = sorted(df[target].unique())
-    # Asignar colores: primero clase negativa, luego positiva
-    if len(classes) == 2:
+    
+    # Asignar colores: clase negativa (primer índice) y positiva (segundo)
+    if len(classes) >= 2:
         color_map = {classes[0]: colors[0], classes[1]: colors[1]}
+        outline_map = {classes[0]: outline_colors[0], classes[1]: outline_colors[1]}
     else:
-        # Si hay más de 2, usar paleta extendida (pero esperamos binario)
-        from plotly.express.colors import qualitative
-        palette = qualitative.Plotly
-        color_map = {cls: palette[i % len(palette)] for i, cls in enumerate(classes)}
-
-    for i, col in enumerate(categoric_cols):
-        # Calcular proporciones por categoría
-        crosstab = pd.crosstab(df[col], df[target], normalize='index') * 100  # porcentajes
-        crosstab = crosstab.reset_index()
-        categories = crosstab[col].tolist()
-        # Para cada clase, añadir una barra (apilada)
-        for cls in classes:
-            values = crosstab[cls].tolist() if cls in crosstab.columns else [0]*len(categories)
-            # Evitar texto cuando valor es 0 (para que no aparezca etiqueta)
-            text = [f"{v:.1f}%" if v > 0 else "" for v in values]
-
-            row = i // cols + 1
-            col_idx = i % cols + 1
-
-            fig.add_trace(
-                go.Bar(
-                    x=categories,
-                    y=values,
-                    name=str(cls) if i == 0 else None,  # mostrar leyenda solo en el primer subplot
-                    text=text,
-                    textposition='inside',
-                    textfont=dict(size=10),
-                    marker=dict(color=color_map[cls]),
-                    showlegend=(i == 0),   # solo una leyenda global
-                    legendgroup=str(cls)   # agrupar por clase
-                ),
-                row=row, col=col_idx
-            )
-
-        # Personalizar ejes y rotación de etiquetas X
-        fig.update_xaxes(title_text=col, tickangle=rotation, row=row, col=col_idx)
-        fig.update_yaxes(title_text=ylabel, row=row, col=col_idx)
-
-    # Ajustar layout general
-    total_height = rows * height_per_row
+        # Si solo hay una clase (caso raro), usar el primer color
+        color_map = {classes[0]: colors[0]}
+        outline_map = {classes[0]: outline_colors[0]}
+    
+    # Calcular proporciones por categoría (porcentajes)
+    crosstab = pd.crosstab(df[col], df[target], normalize='index') * 100
+    crosstab = crosstab.reset_index()
+    categories = crosstab[col].tolist()
+    
+    # Crear figura
+    fig = go.Figure()
+    
+    # Añadir barra para cada clase
+    for cls in classes:
+        if cls in crosstab.columns:
+            values = crosstab[cls].tolist()
+        else:
+            values = [0] * len(categories)
+        
+        # Texto solo para valores > 0
+        text = [f"{v:.1f}%" if v > 0 else "" for v in values]
+        
+        # Determinar nombre de la clase para la leyenda
+        if cls == classes[0] and len(classes) >= 2:
+            name = label_neg
+        elif cls == classes[1] and len(classes) >= 2:
+            name = label_pos
+        else:
+            name = str(cls)
+        
+        fig.add_trace(go.Bar(
+            x=categories,
+            y=values,
+            name=name,
+            text=text,
+            textposition='inside',
+            textfont=dict(size=10, color='white'),
+            marker=dict(
+                color=color_map[cls],
+                line=dict(color=outline_map[cls], width=2)
+            ),
+            hovertemplate='%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>'
+        ))
+    
+    # Ajustar layout
     fig.update_layout(
-        #title_text="Proporción de Pago del Préstamo por Variables Categóricas",
-        #title_x=0.5,
-        height=total_height,
+        title=None,
+        xaxis_title=col,
+        yaxis_title=ylabel,
+        barmode='stack',
         template=theme,
-        barmode='stack',               # apilado
         legend_title="Estado del préstamo",
-        margin=dict(t=80, b=40, l=40, r=40)
+        height=height,
+        width=width,
+        margin=dict(l=40, r=40, t=40, b=60)
     )
-
-    # Personalizar nombres de leyenda si se proporcionan
-    if label_neg and label_pos and len(classes) == 2:
-        # Renombrar leyenda (por defecto usa los valores originales de la columna target)
-        # Plotly asigna los nombres automáticamente; podemos cambiarlos en la leyenda
-        # Pero como añadimos los traces con name=str(cls), podemos mapear los nombres.
-        # Es más fácil pasar los nombres deseados a través de los parámetros.
-        # Vamos a reasignar los nombres de los traces manualmente:
-        for trace in fig.data:
-            if trace.name == str(classes[0]):
-                trace.name = label_neg
-            elif trace.name == str(classes[1]):
-                trace.name = label_pos
-
+    
+    # Rotar etiquetas del eje X
+    fig.update_xaxes(tickangle=rotation)
+    
     return fig
 
 
@@ -629,7 +626,8 @@ data = pd.read_csv(data_path)
 st.set_page_config(
     page_title="Loan Status Prediction",
     page_icon="",
-    layout="wide")
+    layout="wide",
+    initial_sidebar_state="expanded")
 
 ###########################################################################################################
 # Cabecera
@@ -820,14 +818,16 @@ elif st.session_state.pagina == "Análisis":
     st.dataframe(data.describe(include='all').T, width='stretch')
 
     st.subheader("Distribución del estado de los préstamos")
-    fig_donut = plot_pie_binaria(
+    fig_custom = plot_pie_binaria(
     df=data,
     variable='loan_paid_back',
     label1='Pagó',
     label2='No pagó',
-    subtitle='Porcentaje de préstamos pagados vs no pagados',
+    subtitle=None,
+    colors=[ '#1e6e43', '#7a2e29'],          
+    outline_colors=['#2ecc71', '#e74c3c'],  
     hole=0.4)
-    st.plotly_chart(fig_donut, key="donut_binaria", use_container_width=True)
+    st.plotly_chart(fig_custom, key="pie_custom", use_container_width=True)
 
     st.subheader("Algunas variables numéricas")
     numeric_cols = ['age', 'annual_income', 'credit_score', 'total_credit_limit']
@@ -866,17 +866,19 @@ elif st.session_state.pagina == "Análisis":
         st.plotly_chart(fig, key=f"categ_{col}", width='stretch')
 
     st.subheader("Proporción de pago por variables")
-    fig = plot_crosstab_categoricas_interactive(
-        df=data,
-        categoric_cols=categoric_cols,
-        target='loan_paid_back',
-        label_pos="Pagó",
-        label_neg="No pagó",
-        rotation=30,
-        colors=['#e74c3c', '#2ecc71'],   # rojo (no pagó), verde (pagó)
-        theme='plotly_white'
-    )
-    st.plotly_chart(fig, key="crosstab_categoricas", width='stretch')
+    for col in categoric_cols:
+        fig = plot_crosstab_single(
+            df=data,
+            col=col,
+            target='loan_paid_back',
+            label_pos="Si Pagó",
+            label_neg="No Pagó",
+            rotation=30,
+            colors=['#7a2e29', '#1e6e43'],          
+            outline_colors=['#e74c3c', '#2ecc71'],  
+            theme='plotly_white'
+        )
+        st.plotly_chart(fig, key=f"crosstab_{col}", use_container_width=True)
 
 ###########################################################################################################
 # APP
