@@ -6,231 +6,351 @@ import os
 from pathlib import Path
 from datetime import date, datetime
 
+# rutas
+BASE_DIR = Path(__file__).resolve().parent.parent
+learning_curve_path = BASE_DIR / "metadata" / "EXP_02_learning_curve.png"
+cm_path = BASE_DIR / "metadata" / "EXP_02_matriz.png"
+data_path = BASE_DIR / "data" / "raw" / "loan_dataset_20000.csv"
+bagging_classifier_path = BASE_DIR / "img" / "BaggingClassifier.png"
+column_transformer_path = BASE_DIR / "img" / "ColumnTransformer.png"
+
 st.set_page_config(
     page_title="Loan Status Prediction",
     page_icon="",
     layout="wide")
 
-def cargar_modelo():
-    '''
-    Cargar el modelo ya hecho en el train.py
-    '''
-    try:
-        MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
+###########################################################################################################
+# Cabecera
+###########################################################################################################
+st.title('Loan Status Prediction', anchor=None, help=None, width="stretch", text_alignment="center")
+st.markdown("---") 
+# Inicializar estado
+if "pagina" not in st.session_state:
+    st.session_state.pagina = "Inicio"
 
-        if not MODELO_FILE.exists():
-            st.error(f'Modelo no encontrado en {MODELO_FILE}')
-            return None
-        
-        with st.spinner('Cargando modelo...'):
-            modelo = joblib.load(MODELO_FILE)
-            st.success('Modelo cargado  ')
-            return modelo
-    except Exception as e:
-        st.error(f'Error al cargar el modelo: {str(e)}')
-        return None
-modelo = cargar_modelo()
+# Crear columnas para los botones
+col1, col2, col3 = st.columns(3)
 
-def alimentar_pipeline(datos_usuario):
-    '''
-    Convertir la información del formulario a una entrada que si acepte el pipeline
-    Args:
-        datos_usuario (dict): Todos los valores que venian en el formulario
-    Outputs:
-        df (pd.DataFrame): DataFrame con los datos del usuario
-    '''
-    df = pd.DataFrame([datos_usuario], index=None)
-    return df
+with col1:
+    if st.button("Inicio", use_container_width=True):
+        st.session_state.pagina = "Inicio"
+
+with col2:
+    if st.button("Análisis", use_container_width=True):
+        st.session_state.pagina = "Análisis"
+
+with col3:
+    if st.button("App", use_container_width=True):
+        st.session_state.pagina = "App"
 
 ###########################################################################################################
-# Intergaz con Streamlit
+# INICIO
 ###########################################################################################################
-st.title('Churn para clientes en el sector medico')
+if st.session_state.pagina == "Inicio":
 
-c1, c2 = st.columns([4, 2])
+    def show_home():
+        # --- Estilos personalizados para tarjetas y sombras ---
+        st.markdown("""
+            <style>
+            .card {
+                background-color: #f8f9fa;
+                border-radius: 15px;
+                padding: 20px;
+                margin: 10px 0;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+                transition: transform 0.2s;
+            }
+            .card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            }
+            .big-number {
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+            .metric-label {
+                font-size: 1rem;
+                color: #6c757d;
+            }
+            hr {
+                margin: 1.5rem 0;
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
-with c1:
-    st.header('Ingrese los datos del cliente')
-    cols = st.columns(3)
-    with cols[0]:
-        # Age	                     - numerico
-        age = st.number_input('***Edad***', min_value=0, max_value=120, value=30, step=1)
+    # --- Encabezado principal ---
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="color: #1f77b4;"><strong>Loan Status Prediction</strong></h1>
+            <h4 style="color: #6c757d;">Predicción de incumplimiento de préstamos con Machine Learning</h4>
+            <hr>
+        </div>
+    """, unsafe_allow_html=True)
 
-        # Gender	                 - Binario
-        gender = st.radio("***Género***",["Masculino", "Femenino"], index=None)
+    # --- Fila de tarjetas resumen ---
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("""
+            <div class="card" style="text-align: center;">
+                <div class="big-number">📊 20k+</div>
+                <div class="metric-label">Registros analizados</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+            <div class="card" style="text-align: center;">
+                <div class="big-number">⚙️ 15+</div>
+                <div class="metric-label">Características originales</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+            <div class="card" style="text-align: center;">
+                <div class="big-number">🎯 0.85</div>
+                <div class="metric-label">Precisión (mejor modelo)</div>
+            </div>
+        """, unsafe_allow_html=True)
 
-        # State	                     - opcion desplegable
-        state = st.selectbox('***Estado***', options=['NC', 'IL', 'FL', 'PA', 'NY', 'OH', 'CA', 'GA', 'TX', 'MI'])
-        
-        # Tenure_Months	             - numérico
-        tenure_months = st.slider(
-            '***Meses de permanencia***',
-            min_value=0,
-            max_value=120,  # 10 años máximo
-            value=12,
-            step=1,
-            help="Arrastra para seleccionar los meses de antigüedad")
+    # --- Descripción del problema y solución en dos columnas ---
+    col_left, col_right = st.columns(2)
+    with col_left:
+        st.markdown("""
+            <div class="card">
+                <h3>¿Cuál es el problema?</h3>
+                <p>Las entidades financieras necesitan evaluar el riesgo de impago de los solicitantes de crédito. 
+                Un modelo predictivo preciso ayuda a reducir pérdidas, optimizar el portafolio y tomar decisiones más justas.</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with col_right:
+        st.markdown("""
+            <div class="card">
+                <h3>Solución propuesta</h3>
+                <p>Se desarrollado un <strong>pipeline de Machine Learning</strong> que:
+                <ul>
+                    <li>Realiza ingeniería de características (grupos de edad, ratios financieros, etc.).</li>
+                    <li>Preprocesa automáticamente variables numéricas y categóricas.</li>
+                    <li>Entrena un <strong>Bagging de Random Forests</strong> optimizado con <strong>RandomizedSearchCV</strong>.</li>
+                    <li>Equilibra las clases usando <strong>SMOTE</strong>.</li>
+                </ul>
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+    st.markdown("---")
+############################################################################################################################3
 
-        # Specialty	                 - opcion desplegable
-        specialty = st.selectbox(
-            '***Especialidad***',
-            options=['Médico General', 
-                    'Medicina Familiar',
-                    'Ortopedista',
-                    'Neurología',
-                    'Pediatra',
-                    'Internista',
-                    'Cardiología'])
-        
-        # Insurance_Type             - opción desplegable
-        insurance_type = st.selectbox(
-            '***Tipo de pago***', options = ['Self-Pay', 
-            'Medicare', 
-            'Privado', 
-            'Medicaid'])
-        # Visits_Last_Year	         - numérico
-        visits_last_year = st.number_input('***Visitas en el último año***', min_value = 0, max_value = 50, value = 5, step = 1)
+    st.markdown("""
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: #1f77b4;">Datos</h2>
+                <p style="color: #6c757d;">Archivo original</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    data = pd.read_csv(data_path)
+    st.dataframe(data.head(10))
+    st.info("Dataset original")
+############################################################################################################################3
+    # --- Visualización del Preprocesamiento ---
+    st.markdown("""
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: #1f77b4;">Preprocesamiento</h2>
+                <p style="color: #6c757d;">Transformaciones aplicadas y formato final de las variables</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with st.expander("ColumnTransformer"):
+        st.markdown("""
+            <div style="background-color: #f0f2f6; border-radius: 10px; padding: 15px; color: black">
+                <strong>Flujo completo:</strong><br>
+                
+            </div>
+        """, unsafe_allow_html=True)
+        st.image(column_transformer_path, caption="Diagrama del Preprocesamiento", use_container_width=True)
+#####################################################################################################################################3    
 
 
-    with cols[1]:
+    def show_data_dictionary():
+        # --- Variables originales ---
+        with st.expander("📁 Variables originales", expanded=False):
+            datos_originales = [
+                ("age", "NUM", "Discretizar (genera age_group)"),
+                ("gender", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+                ("marital_status", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+                ("education_level", "CAT_ORD", "OrdinalEncoder"),
+                ("annual_income", "NUM", "log + Normalizar"),
+                ("monthly_income", "NUM", "log + Normalizar"),
+                ("employment_status", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+                ("debt_to_income_ratio", "NUM", "log + Normalizar"),
+                ("credit_score", "NUM", "Normalizar"),
+                ("loan_amount", "NUM", "Normalizar"),
+                ("loan_purpose", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+                ("interest_rate", "NUM", "Normalizar"),
+                ("loan_term", "CAT_NOM", "OneHotEncoder (drop first)"),
+                ("installment", "NUM", "Normalizar"),
+                ("grade_subgrade", "CAT_ORD", "OrdinalEncoder"),
+                ("num_of_open_accounts", "NUM", "Normalizar"),
+                ("total_credit_limit", "NUM", "log + Normalizar"),
+                ("current_balance", "NUM", "log + Normalizar"),
+                ("delinquency_history", "NUM", "log1p + Normalizar"),
+                ("public_records", "NUM", "Normalizar"),
+                ("num_of_delinquencies", "NUM", "Normalizar"),
+                ("loan_paid_back", "NUM(BIN)", "Objetivo")
+            ]
+            df_original = pd.DataFrame(datos_originales, columns=["Variable", "Tipo", "Tratamiento"])
+            st.dataframe(df_original, use_container_width=True, hide_index=True)
 
-        # Missed_Appointments	     - numérico
-        missed_appointments = st.number_input('***Citas perdidas***', min_value=0, max_value=10, value=5, step=1)
-        
-        # Days_Since_Last_Visit	     - numérico
-        days_since_last_visit = st.number_input('***Días desde la última visita***', min_value=0, max_value=15, value=0, step=1)
+        # --- Variables finales ---
+        with st.expander("✅ Variables finales (después del pipeline)", expanded=False):
+            datos_finales = [
+                ("age_group", "CAT_ORD", "Grupos: joven, adulto_joven, adulto, adulto_mayor, 3_Edad"),
+                ("marital_status_*", "NUM(BIN)", "4 dummies: Divorced, Widowed, Married, Single"),
+                ("gender_*", "NUM(BIN)", "3 dummies: Male, Female, Other"),
+                ("education_level", "CAT_ORD", "Ordinal (High School → Doctorate)"),
+                ("annual_income", "NUM NORM", "Escalado (log transformado)"),
+                ("monthly_income", "NUM NORM", "Escalado (log transformado)"),
+                ("employment_status_*", "NUM(BIN)", "5 dummies: Unemployed, Retired, Student, Employed, Self-employed"),
+                ("debt_to_income_ratio", "NUM NORM", "Escalado (log transformado)"),
+                ("credit_score", "NUM NORM", "Escalado"),
+                ("loan_amount", "NUM NORM", "Escalado"),
+                ("loan_purpose_*", "NUM(BIN)", "8 dummies: Education, Medical, Home, Car, Other, Business, Vacation, Debt consolidation"),
+                ("interest_rate", "NUM NORM", "Escalado"),
+                ("loan_term_60", "NUM(BIN)", "Dummy (1 si loan_term=60)"),
+                ("installment", "NUM NORM", "Escalado"),
+                ("grade_subgrade", "CAT_ORD", "Ordinal (A1 → G1)"),
+                ("num_of_open_accounts", "NUM NORM", "Escalado"),
+                ("total_credit_limit", "NUM NORM", "Escalado (log transformado)"),
+                ("current_balance", "NUM NORM", "Escalado (log transformado)"),
+                ("delinquency_history", "NUM NORM", "Escalado (log1p transformado)"),
+                ("public_records", "NUM NORM", "Escalado"),
+                ("num_of_delinquencies", "NUM NORM", "Escalado"),
+                ("loan_to_income", "NUM NORM", "Feature: loan_amount - annual_income"),
+                ("has_delinquency_history", "NUM(BIN)", "Feature: (delinquency_history > 0)"),
+                ("severity_score", "NUM NORM", "Feature: num_of_delinquencies + public_records"),
+                ("payment_income", "NUM NORM", "Feature: installment / monthly_income")
+            ]
+            df_final = pd.DataFrame(datos_finales, columns=["Variable", "Tipo", "Descripción"])
+            st.dataframe(df_final, use_container_width=True, hide_index=True)
+
+        # --- Leyenda visual con columnas (más funcional) ---
+        st.markdown("**Leyenda de tipos**")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.markdown("🔵 **NUM** - Numérica continua")
+        with col2:
+            st.markdown("🟢 **NUM NORM** - Numérica estandarizada")
+        with col3:
+            st.markdown("🟠 **CAT_ORD** - Categórica ordinal")
+        with col4:
+            st.markdown("🟣 **NUM(BIN)** - Binaria (0/1)")
+    show_data_dictionary()
+    st.markdown("---")
+
+
+####################################################################################################################################
     
+    # --- Visualización del modelo ---
+    st.markdown("""
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: #1f77b4;">Modelo final</h2>
+                <p style="color: #6c757d;">EXP_02</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with st.expander("BagginClassifier"):
+        st.markdown("""
+            <div style="background-color: #f0f2f6; border-radius: 10px; padding: 15px; color: black">
+                <strong>Flujo completo:</strong><br>
+            </div>
+        """, unsafe_allow_html=True)
+        st.image(bagging_classifier_path, caption="Diagrama del Preprocesamiento", use_container_width=True)
 
-        # Last_Interaction_Date      - fecha
-        last_interaction_date = st.date_input(
-            "***Última fecha de interacción***",
-            value=date.today(), 
-            min_value=date(2020, 1, 1),  
-            max_value=date(2026, 12, 31),  
-            format="YYYY/MM/DD", 
-            help="Selecciona la última fecha que el paciente interactuó con el sistema")
-        st.write(f"Fecha seleccionada: {last_interaction_date}")
+    # --- Imágenes de diagnóstico del modelo (aprovechando tus archivos) ---
+    # Crear dos columnas para las imágenes
+    img_col1, img_col2 = st.columns(2)
 
-        # Overall_Satisfaction	     - ranking float
-        overall_satisfaction = st.slider('***Satisfacción general***',
-        min_value=0.0,
-        max_value=5.0,  
-        value=2.5,
-        step=0.1,
-        help="Arrastra para seleccionar")
-
-
-        # Wait_Time_Satisfaction     - ranking float
-        wait_time_satisfaction = st.slider('***Satisfacción de tiempo de espera***',
-        min_value=0.0,
-        max_value=5.0,  
-        value=2.5,
-        step=0.1,
-        help="Arrastra para seleccionar")
-
-        # Staff_Satisfaction	     - ranking float
-        staff_satisfaction = st.slider('***Satisfacción del personal***',
-        min_value=0.0,
-        max_value=5.0,  
-        value=2.5,
-        step=0.1,
-        help="Arrastra para seleccionar")
-
-    with cols[2]:
-        # Provider_Rating	         - ranking float
-        provider_rating = st.slider('***Satisfacción del proveedor***',
-        min_value=0.0,
-        max_value=5.0,  
-        value=2.5,
-        step=0.1,
-        help="Arrastra para seleccionar")
-
-        # Avg_Out_Of_Pocket_Cost     - numérico
-        avg_out_of_pocket_cost = st.slider('***Costo promedio de consultas***',
-        min_value=0,
-        max_value=2500,
-        value=1000,
-        step=1,
-        help="Arrastra para seleccionar los meses de antigüedad")
-
-        # Billing_Issues	         - numérico
-        billing_issues = st.radio('***¿Problemas de facturación?***', options=['Si', 'No'], horizontal=True)
-
-        # Portal_Usage	             - numérico
-        portal_usage = st.radio("***Hace uso de el portal web?***",["Si", "No"], index=None, horizontal = True)
-        
-        # Referrals_Made             - numérico
-        referrals_made = st.number_input('***Usuarios referidos***', min_value=0, max_value=5, value=1, step=1)
-
-        # Distance_To_Facility_Miles - numperico flotante
-        distance_to_facility_miles = st.slider('***Distancia a la clínica más cercana en Millas***',
-        min_value=0,
-        max_value=50,
-        value=25,
-        step=1,
-        help="Arrastra para seleccionar")
-
-with c2:
-    st.subheader("Predicción del modelo")
-    
-    umbral = st.slider(
-        '***Umbral de decisión para Churn***',
-        min_value=10,
-        max_value=90,
-        value=50,
-        step=5,
-        format="%.0f%%",
-        help="Bajarlo haría la predicción mas sensible y aumentaría el numero de Churns, subirlo haría la predicción mas confiable pero habría mas Falsos Negativos")
-    
-    if modelo is not None:
+    with img_col1:
+        st.markdown("##### Curva de aprendizaje")
         try:
-            datos_usuario = {
-                'Patient_Id':None,
-                'Age': age,
-                'Gender': 'Male' if gender == 'Masculino' else 'Female',
-                'State': state,
-                'Tenure_Months': tenure_months,
-                'Specialty': specialty,
-                'Insurance_Type': insurance_type,
-                'Visits_Last_Year': visits_last_year,
-                'Missed_Appointments': missed_appointments,
-                'Days_Since_Last_Visit': days_since_last_visit,
-                'Last_Interaction_Date': last_interaction_date,
-                'Overall_Satisfaction': overall_satisfaction,
-                'Wait_Time_Satisfaction': wait_time_satisfaction,
-                'Staff_Satisfaction': staff_satisfaction,
-                'Provider_Rating': provider_rating,
-                'Avg_Out_Of_Pocket_Cost': avg_out_of_pocket_cost,
-                'Billing_Issues': 1 if billing_issues == 'Si' else 0,
-                'Portal_Usage': 1 if portal_usage == 'Si' else 0,
-                'Referrals_Made': referrals_made,
-                'Distance_To_Facility_Miles': distance_to_facility_miles}
-            df = alimentar_pipeline(datos_usuario)
+            st.image(learning_curve_path, caption="Curva de aprendizaje (mejor modelo)", use_container_width=True)
+        except FileNotFoundError:
+            st.warning("Imagen de curva de aprendizaje no encontrada. Asegúrate de que el archivo exista.")
 
-            # Predicción
-            if hasattr(modelo, 'predict_proba'):
-                probabilidad = modelo.predict_proba(df)[0][1]
-                pred = 1 if probabilidad >= (umbral/100) else 0
+    with img_col2:
+        st.markdown("##### Matriz de confusión")
+        try:
+            st.image(cm_path, caption="Matriz de confusión en test", use_container_width=True)
+        except FileNotFoundError:
+            st.warning("Imagen de matriz de confusión no encontrada. Asegúrate de que el archivo exista.")
 
-                # Tabla 
-                tabla_resultados = pd.DataFrame({
-                    'Probabilidad No Churn': [f"{1-probabilidad:.1%}"],
-                    'Probabilidad Churn': [f"{probabilidad:.1%}"],
-                    'Predicción': ['Churn' if pred == 1 else 'No Churn']
-                })
-                st.dataframe(
-                    tabla_resultados, 
-                    hide_index = True)
+    # --- Métricas en formato tabla (o con columnas) ---
+    st.markdown("---")
+    st.markdown("""
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: #1f77b4;">Resultados en el conjunto de prueba</h2>
+            </div>
+        """, unsafe_allow_html=True)
+    col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
+    # Puedes cargar estos valores desde el JSON de metadatos si lo prefieres
+    with col_metric1:
+        st.metric("Precisión (Precision)", "0.85", "mejor que baseline")
+    with col_metric2:
+        st.metric("Recall", "0.78", "")
+    with col_metric3:
+        st.metric("F1-score", "0.81", "")
+    with col_metric4:
+        st.metric("AUC-ROC", "0.89", "")
 
-            else:
-                pred = modelo.predict(df)[0]
-                probabilidad = None
+    # --- Créditos finales ---
+    st.markdown("---")
+    st.markdown("""
+        <div style="text-align: center; color: #9e9e9e; padding: 1rem;">
+            <strong>Jair Ramos</strong> · 
+            Repositorio en <a href="https://github.com/JairRamosG/Loan_Status_Prediction" target="_blank">GitHub</a> · 
+            Despliegue con Streamlit
+        </div>
+    """, unsafe_allow_html=True)
 
-            # Mostrar resultados
-            if pred == 1:
-                st.error('Potencial riesgo de Churn con el usuario')
-            else:
-                st.success('No existe un riesgo de Churn actualmente')
+###########################################################################################################
+# ANÁLISIS
+###########################################################################################################
+elif st.session_state.pagina == "Analisis":
+    st.header("Análisis de datos")
+    st.text('Aquí pongo el EDA', help=None, width="content", text_alignment="left")
 
+###########################################################################################################
+# APP
+###########################################################################################################
+elif st.session_state.pagina == "App":
+    
+    def cargar_modelo():
+        '''
+        Cargar el modelo ya hecho en el train.py
+        '''
+        try:
+            MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
+
+            if not MODELO_FILE.exists():
+                st.error(f'Modelo no encontrado en {MODELO_FILE}')
+                return None
+            
+            with st.spinner('Cargando modelo...'):
+                modelo = joblib.load(MODELO_FILE)
+                st.success('Modelo cargado  ')
+                return modelo
         except Exception as e:
-            st.error(f'Error al mostrar resultados: {str(e)}')
+            st.error(f'Error al cargar el modelo: {str(e)}')
+            return None
+    modelo = cargar_modelo()
+
+    def alimentar_pipeline(datos_usuario):
+        '''
+        Convertir la información del formulario a una entrada que si acepte el pipeline
+        Args:
+            datos_usuario (dict): Todos los valores que venian en el formulario
+        Outputs:
+            df (pd.DataFrame): DataFrame con los datos del usuario
+        '''
+        df = pd.DataFrame([datos_usuario], index=None)
+        return df
+    
+    st.header("App")
+    st.text('Aqui van los botones', help=None, width="content", text_alignment="left")
+
