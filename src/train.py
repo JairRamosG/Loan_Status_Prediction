@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from pipelines import build_full_pipeline
 from datetime import datetime
 
-from utils import save_confusion_matrix, save_medidas_biclase
+from utils import save_learning_curve, save_confusion_matrix, save_medidas_biclase
 import joblib
 import json
 
@@ -42,6 +42,10 @@ def train_model(config_file):
     MODEL_DIR = Path(os.getenv('MODEL_DIR', BASE_DIR / 'models'))
     METADATA_DIR = Path(os.getenv('METADATA_DIR', BASE_DIR / 'metadata'))
     LOGS_DIR = Path(os.getenv('LOGS_DIR', BASE_DIR / 'logs'))
+    LOGS_FILIE_PATH = LOGS_DIR / f"{config['experiment_name']}.log"
+    print(f"BASE_DIR: {BASE_DIR}")
+    print(f"LOGS_DIR: {LOGS_DIR}")
+    print(f"Log file: {LOGS_DIR / config['experiment_name']}")
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     METADATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -51,7 +55,7 @@ def train_model(config_file):
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    handler = logging.FileHandler(LOGS_DIR / config['log_file'])
+    handler = logging.FileHandler(LOGS_FILIE_PATH)
     handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
     logger.addHandler(handler)
 
@@ -78,8 +82,8 @@ def train_model(config_file):
     required_cols = (
         [TARGET_VARIABLE]+
         IGNORAR_COLS+
-        NUM_COLS+
-        CAT_ORD_COLS+
+        list(NUM_COLS.keys())+
+        list(CAT_ORD_COLS.keys())+
         CAT_NOM_OHE_DROP_COLS+
         CAT_NOM_OHE_COLS+
         CAT_NOM_OHE_FREC_COLS)
@@ -186,6 +190,23 @@ def train_model(config_file):
     except Exception as e:
         logger.error(f'Error en los resultados del grid: {str(e)}')
         raise
+
+    # Curva de aprendizaje
+    try:
+        ruta_curva = str(METADATA_DIR) + "/" + config['experiment_name'] + '_learning_curve' + '.png'
+        save_learning_curve(
+        estimator=best_model,
+        X=X_train,
+        y=y_train,
+        ruta_img = ruta_curva,
+        scoring = scoring,    
+        cv=StratifiedKFold(n_splits=3, shuffle=True, random_state=seed),
+        train_sizes=np.linspace(0.1, 1.0, 6),
+        n_jobs=-1,
+        title=f"Curva de Aprendizaje - {config['experiment_name']} (mejor modelo)"
+    )
+    except Exception as e:
+        logger.error(f'Error generando la curva: {str(e)}', exc_info=True)
 
     # Evaluación del modelo
     try:

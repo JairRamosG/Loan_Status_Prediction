@@ -1,9 +1,9 @@
 ,Medida,Valor
-0,Accuracy,0.89
-1,Error Rate,0.11
-2,Recall (Sensitivity),0.9762
-3,Specificity,0.545
-4,Balanced Accuracy,0.7606
-5,Precision,0.8956
-6,F1 Score,0.9342
-7,MCC,0.6241
+0,Accuracy,0.892
+1,Error Rate,0.108
+2,Recall (Sensitivity),0.9784
+3,Specificity,0.5462
+4,Balanced Accuracy,0.7623
+5,Precision,0.8961
+6,F1 Score,0.9355
+7,MCC,0.6314

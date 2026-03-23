@@ -4,9 +4,6 @@
 # Nombre experimento
 experiment_name: 'EXP_02'
 
-# logger
-log_file : 'EXP_02.log'
-
 # Variable objetivo
 target_variable: 'loan_paid_back'
 
@@ -71,7 +68,6 @@ columnas:
     num_of_delinquencies:
       transform: 'scale'
 
-
   # Variables ordinales 
   cat_ord_cols:
     education_level:
@@ -122,38 +118,39 @@ smote:
   k_neighbors: 5
   random_state: 42
 
+
 ######## MODELS
 models:
-  n_estimators: 600
+  n_estimators: 500
   max_samples : 0.5
   bootstrap : True
   n_jobs : -1
   base_model_params:
       class: sklearn.ensemble.RandomForestClassifier
       params:
-        n_estimators: 40 
-        max_leaf_nodes : 25
+        n_estimators: 30 
+        max_leaf_nodes : 20
         random_state : null
         n_jobs : -1
 
 # BÚSQUEDA DE HIPERPARÁMETROS EN EL GRID
 random_search:
   tipo: 'RandomizedSearchCV'
-  n_iter: 35
-  scoring: 'matthews_corrcoef' 
-  cv_folds: 5               
+  n_iter: 30
+  scoring: 'precision' 
+  cv_folds: 3                
   n_jobs: -1                    
   verbose: 1                     
   error_score: 'raise'                        
   param_grid:    
     # BAGGING
-    'model__n_estimators': [400, 450]
-    'model__max_samples' : [0.4, 0.6]
+    'model__n_estimators': [350, 500]
+    'model__max_samples' : [0.3, 0.5]
     'model__bootstrap' : [True]
     'model__n_jobs' : [-1]
     # RANDOM FOREST
-    'model__estimator__n_estimators': [40, 45]
-    'model__estimator__max_leaf_nodes' : [30, 35]
-    'model__estimator__min_samples_split': [30, 40]
+    'model__estimator__n_estimators': [30, 35]
+    'model__estimator__max_leaf_nodes' : [30, 50]
+    'model__estimator__min_samples_split': [5, 10]
     'model__estimator__max_features': ['sqrt']
     

@@ -1,15 +1,15 @@
 {
     "best_params": {
         "model__n_jobs": -1,
-        "model__n_estimators": 450,
-        "model__max_samples": 0.4,
-        "model__estimator__n_estimators": 40,
-        "model__estimator__min_samples_split": 40,
-        "model__estimator__max_leaf_nodes": 35,
+        "model__n_estimators": 500,
+        "model__max_samples": 0.5,
+        "model__estimator__n_estimators": 35,
+        "model__estimator__min_samples_split": 5,
+        "model__estimator__max_leaf_nodes": 50,
         "model__estimator__max_features": "sqrt",
         "model__bootstrap": true
     },
-    "best_score": 0.6228409782665233,
+    "best_score": 0.8949239306915384,
     "scoring": {
         "Medida": {
             "0": "Accuracy",
@@ -22,14 +22,14 @@
             "7": "MCC"
         },
         "Valor": {
-            "0": 0.89,
-            "1": 0.11,
-            "2": 0.9762,
-            "3": 0.545,
-            "4": 0.7606,
-            "5": 0.8956,
-            "6": 0.9342,
-            "7": 0.6241
+            "0": 0.892,
+            "1": 0.108,
+            "2": 0.9784,
+            "3": 0.5462,
+            "4": 0.7623,
+            "5": 0.8961,
+            "6": 0.9355,
+            "7": 0.6314
         }
     }
 }

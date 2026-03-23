@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import (accuracy_score, recall_score, balanced_accuracy_score, precision_score, f1_score, matthews_corrcoef)
-
+from sklearn.model_selection import learning_curve
+from pathlib import Path
 
 class Feature_Engineering(BaseEstimator, TransformerMixin):
     ''' 
@@ -122,3 +123,104 @@ def save_medidas_biclase(y_test, y_pred, ruta_medidas):
     resultados = pd.DataFrame(metrics.items(), columns = ['Medida', 'Valor'])
     resultados.to_csv(ruta_medidas)
     return resultados
+
+def save_learning_curve(
+    estimator,
+    X,
+    y,
+    ruta_img,
+    scoring='accuracy',
+    cv=5,
+    train_sizes=np.linspace(0.1, 1.0, 5),
+    n_jobs=-1,
+    verbose=0,
+    title='Curva de Aprendizaje',
+    ylim=None,
+    figsize=(8, 6),
+    random_state=42
+):
+    """
+    Genera y guarda la curva de aprendizaje para el estimador dado.
+
+    Parámetros
+    ----------
+    estimator : objeto con API de scikit-learn (pipeline)
+        Modelo ya construido (no entrenado).
+    X : array-like, shape (n_samples, n_features)
+        Datos de entrenamiento.
+    y : array-like, shape (n_samples,)
+        Variable objetivo.
+    scoring : str o callable, default='accuracy'
+        Métrica de evaluación.
+    cv : int o cross-validator, default=5
+        Número de folds o generador de validación.
+    train_sizes : array-like, default=np.linspace(0.1, 1.0, 5)
+        Porcentajes del conjunto de entrenamiento a usar.
+    n_jobs : int, default=-1
+        Número de procesos paralelos.
+    verbose : int, default=0
+        Nivel de detalle.
+    title : str, default='Curva de Aprendizaje'
+        Título del gráfico.
+    ylim : tuple, optional
+        Límites del eje Y.
+    figsize : tuple, default=(8, 6)
+        Tamaño de la figura.
+    random_state : int, default=42
+        Semilla para reproducibilidad.
+    save_path : str o Path, optional
+        Ruta completa donde guardar la imagen. Si no se proporciona, no se guarda.
+    dpi : int, default=100
+        Resolución de la imagen guardada.
+    show : bool, default=True
+        Si se muestra la gráfica en pantalla (False si solo se quiere guardar).
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        Figura generada.
+    """
+    # Crear scorer a partir de string
+    if isinstance(scoring, str):
+        from sklearn.metrics import get_scorer
+        scorer = get_scorer(scoring)
+    else:
+        scorer = scoring
+
+    # Calcular curva de aprendizaje
+    train_sizes_abs, train_scores, test_scores = learning_curve(
+        estimator=estimator,
+        X=X,
+        y=y,
+        train_sizes=train_sizes,
+        cv=cv,
+        scoring=scorer,
+        n_jobs=n_jobs,
+        verbose=verbose,
+        random_state=random_state
+    )
+
+    # Estadísticas
+    train_mean = np.mean(train_scores, axis=1)
+    train_std = np.std(train_scores, axis=1)
+    test_mean = np.mean(test_scores, axis=1)
+    test_std = np.std(test_scores, axis=1)
+
+    # Graficar
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.fill_between(train_sizes_abs, train_mean - train_std, train_mean + train_std,
+                    alpha=0.1, color="blue")
+    ax.fill_between(train_sizes_abs, test_mean - test_std, test_mean + test_std,
+                    alpha=0.1, color="orange")
+    ax.plot(train_sizes_abs, train_mean, 'o-', color="blue", label="Entrenamiento")
+    ax.plot(train_sizes_abs, test_mean, 'o-', color="orange", label="Validación")
+    ax.set_xlabel("Tamaño del conjunto de entrenamiento")
+    ax.set_ylabel("Puntuación (scoring)")
+    ax.set_title(title)
+    if ylim:
+        ax.set_ylim(ylim)
+    ax.legend(loc="best")
+    ax.grid(True)
+    plt.tight_layout()
+    plt.savefig(ruta_img)
+    plt.close(fig)
