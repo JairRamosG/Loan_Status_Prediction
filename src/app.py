@@ -30,15 +30,15 @@ if "pagina" not in st.session_state:
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("Inicio", use_container_width=True):
+    if st.button("Inicio", width='stretch'):
         st.session_state.pagina = "Inicio"
 
 with col2:
-    if st.button("Análisis", use_container_width=True):
+    if st.button("Análisis", width='stretch'):
         st.session_state.pagina = "Análisis"
 
 with col3:
-    if st.button("App", use_container_width=True):
+    if st.button("App", width='stretch'):
         st.session_state.pagina = "App"
 
 ###########################################################################################################
@@ -155,7 +155,7 @@ if st.session_state.pagina == "Inicio":
                 
             </div>
         """, unsafe_allow_html=True)
-        st.image(column_transformer_path, caption="Diagrama del Preprocesamiento", use_container_width=True)
+        st.image(column_transformer_path, caption="Diagrama del Preprocesamiento", width='stretch')
 #####################################################################################################################################3    
 
 
@@ -187,7 +187,7 @@ if st.session_state.pagina == "Inicio":
                 ("loan_paid_back", "NUM(BIN)", "Objetivo")
             ]
             df_original = pd.DataFrame(datos_originales, columns=["Variable", "Tipo", "Tratamiento"])
-            st.dataframe(df_original, use_container_width=True, hide_index=True)
+            st.dataframe(df_original, width='stretch', hide_index=True)
 
         # --- Variables finales ---
         with st.expander("Variables finales (después del pipeline)", expanded=False):
@@ -219,7 +219,7 @@ if st.session_state.pagina == "Inicio":
                 ("payment_income", "NUM NORM", "Feature: installment / monthly_income")
             ]
             df_final = pd.DataFrame(datos_finales, columns=["Variable", "Tipo", "Descripción"])
-            st.dataframe(df_final, use_container_width=True, hide_index=True)
+            st.dataframe(df_final, width='stretch', hide_index=True)
 
         # --- Leyenda visual con columnas (más funcional) ---
         st.markdown("**Leyenda de tipos**")
@@ -251,7 +251,7 @@ if st.session_state.pagina == "Inicio":
                 <strong>Flujo completo:</strong><br>
             </div>
         """, unsafe_allow_html=True)
-        st.image(bagging_classifier_path, caption="Diagrama del Preprocesamiento", use_container_width=True)
+        st.image(bagging_classifier_path, caption="Diagrama del Preprocesamiento", width='stretch')
 
     # --- Imágenes de diagnóstico del modelo (aprovechando tus archivos) ---
     # Crear dos columnas para las imágenes
@@ -260,14 +260,14 @@ if st.session_state.pagina == "Inicio":
     with img_col1:
         st.markdown("##### Curva de aprendizaje")
         try:
-            st.image(learning_curve_path, caption="Curva de aprendizaje (mejor modelo)", use_container_width=True)
+            st.image(learning_curve_path, caption="Curva de aprendizaje (mejor modelo)", width='stretch')
         except FileNotFoundError:
             st.warning("Imagen de curva de aprendizaje no encontrada. Asegúrate de que el archivo exista.")
 
     with img_col2:
         st.markdown("##### Matriz de confusión")
         try:
-            st.image(cm_path, caption="Matriz de confusión en test", use_container_width=True)
+            st.image(cm_path, caption="Matriz de confusión en test", width='stretch')
         except FileNotFoundError:
             st.warning("Imagen de matriz de confusión no encontrada. Asegúrate de que el archivo exista.")
 
@@ -303,7 +303,7 @@ if st.session_state.pagina == "Inicio":
 ###########################################################################################################
 elif st.session_state.pagina == "Analisis":
     st.header("Análisis de datos")
-    st.text('Aquí pongo el EDA', help=None, width="content", text_alignment="left")
+    st.text('Aquí pongo el EDA')
 
 ###########################################################################################################
 # APP
@@ -342,5 +342,5 @@ elif st.session_state.pagina == "App":
         return df
     
     st.header("App")
-    st.text('Aqui van los botones', help=None, width="content", text_alignment="left")
+    st.text('Aqui van los botones')
 
