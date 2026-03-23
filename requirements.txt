@@ -5,5 +5,5 @@ matplotlib==3.10.0
 seaborn==0.13.2
 scikit-learn==1.6.1
 imbalanced-learn==0.13.0
-plotly
+plotly==6.6.0
 joblib==1.5.1

@@ -5,6 +5,257 @@ import os
 
 from pathlib import Path
 from datetime import date, datetime
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import seaborn as sns
+
+
+# INICIO
+def show_home():
+    # --- Estilos personalizados para tarjetas y sombras ---
+    st.markdown("""
+        <style>
+        .card {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .metric-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        hr {
+            margin: 1.5rem 0;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+def show_data_dictionary():
+    # --- Variables originales ---
+    with st.expander("Variables originales", expanded=False):
+        datos_originales = [
+            ("age", "NUM", "Discretizar (genera age_group)"),
+            ("gender", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+            ("marital_status", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+            ("education_level", "CAT_ORD", "OrdinalEncoder"),
+            ("annual_income", "NUM", "log + Normalizar"),
+            ("monthly_income", "NUM", "log + Normalizar"),
+            ("employment_status", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+            ("debt_to_income_ratio", "NUM", "log + Normalizar"),
+            ("credit_score", "NUM", "Normalizar"),
+            ("loan_amount", "NUM", "Normalizar"),
+            ("loan_purpose", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
+            ("interest_rate", "NUM", "Normalizar"),
+            ("loan_term", "CAT_NOM", "OneHotEncoder (drop first)"),
+            ("installment", "NUM", "Normalizar"),
+            ("grade_subgrade", "CAT_ORD", "OrdinalEncoder"),
+            ("num_of_open_accounts", "NUM", "Normalizar"),
+            ("total_credit_limit", "NUM", "log + Normalizar"),
+            ("current_balance", "NUM", "log + Normalizar"),
+            ("delinquency_history", "NUM", "log1p + Normalizar"),
+            ("public_records", "NUM", "Normalizar"),
+            ("num_of_delinquencies", "NUM", "Normalizar"),
+            ("loan_paid_back", "NUM(BIN)", "Objetivo")
+        ]
+        df_original = pd.DataFrame(datos_originales, columns=["Variable", "Tipo", "Tratamiento"])
+        st.dataframe(df_original, width='stretch', hide_index=True)
+
+    # --- Variables finales ---
+    with st.expander("Variables finales (después del pipeline)", expanded=False):
+        datos_finales = [
+            ("age_group", "CAT_ORD", "Grupos: joven, adulto_joven, adulto, adulto_mayor, 3_Edad"),
+            ("marital_status_*", "NUM(BIN)", "4 dummies: Divorced, Widowed, Married, Single"),
+            ("gender_*", "NUM(BIN)", "3 dummies: Male, Female, Other"),
+            ("education_level", "CAT_ORD", "Ordinal (High School → Doctorate)"),
+            ("annual_income", "NUM NORM", "Escalado (log transformado)"),
+            ("monthly_income", "NUM NORM", "Escalado (log transformado)"),
+            ("employment_status_*", "NUM(BIN)", "5 dummies: Unemployed, Retired, Student, Employed, Self-employed"),
+            ("debt_to_income_ratio", "NUM NORM", "Escalado (log transformado)"),
+            ("credit_score", "NUM NORM", "Escalado"),
+            ("loan_amount", "NUM NORM", "Escalado"),
+            ("loan_purpose_*", "NUM(BIN)", "8 dummies: Education, Medical, Home, Car, Other, Business, Vacation, Debt consolidation"),
+            ("interest_rate", "NUM NORM", "Escalado"),
+            ("loan_term_60", "NUM(BIN)", "Dummy (1 si loan_term=60)"),
+            ("installment", "NUM NORM", "Escalado"),
+            ("grade_subgrade", "CAT_ORD", "Ordinal (A1 → G1)"),
+            ("num_of_open_accounts", "NUM NORM", "Escalado"),
+            ("total_credit_limit", "NUM NORM", "Escalado (log transformado)"),
+            ("current_balance", "NUM NORM", "Escalado (log transformado)"),
+            ("delinquency_history", "NUM NORM", "Escalado (log1p transformado)"),
+            ("public_records", "NUM NORM", "Escalado"),
+            ("num_of_delinquencies", "NUM NORM", "Escalado"),
+            ("loan_to_income", "NUM NORM", "Feature: loan_amount - annual_income"),
+            ("has_delinquency_history", "NUM(BIN)", "Feature: (delinquency_history > 0)"),
+            ("severity_score", "NUM NORM", "Feature: num_of_delinquencies + public_records"),
+            ("payment_income", "NUM NORM", "Feature: installment / monthly_income")
+        ]
+        df_final = pd.DataFrame(datos_finales, columns=["Variable", "Tipo", "Descripción"])
+        st.dataframe(df_final, width='stretch', hide_index=True)
+
+    # --- Leyenda visual con columnas (más funcional) ---
+    st.markdown("**Leyenda de tipos**")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown("🔵 **NUM** - Numérica continua")
+    with col2:
+        st.markdown("🟢 **NUM NORM** - Numérica estandarizada")
+    with col3:
+        st.markdown("🟠 **CAT_ORD** - Categórica ordinal")
+    with col4:
+        st.markdown("🟣 **NUM(BIN)** - Binaria (0/1)")
+
+# APP
+def cargar_modelo():
+    '''
+    Cargar el modelo ya hecho en el train.py
+    '''
+    try:
+        MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
+
+        if not MODELO_FILE.exists():
+            st.error(f'Modelo no encontrado en {MODELO_FILE}')
+            return None
+        
+        with st.spinner('Cargando modelo...'):
+            modelo = joblib.load(MODELO_FILE)
+            st.success('Modelo cargado  ')
+            return modelo
+    except Exception as e:
+        st.error(f'Error al cargar el modelo: {str(e)}')
+        return None
+
+def alimentar_pipeline(datos_usuario):
+    '''
+    Convertir la información del formulario a una entrada que si acepte el pipeline
+    Args:
+        datos_usuario (dict): Todos los valores que venian en el formulario
+    Outputs:
+        df (pd.DataFrame): DataFrame con los datos del usuario
+    '''
+    df = pd.DataFrame([datos_usuario], index=None)
+    return df
+
+# ANÁLISIS
+def plot_hist_variable_binaria_interactivo(df, variable, title, xlabel, label1, label2, subtitle):
+    # Obtener conteos
+    counts = df[variable].value_counts().reset_index()
+    counts.columns = [variable, 'count']
+    labels_map = {1: label1, 0: label2}
+    counts['etiqueta'] = counts[variable].map(labels_map)
+    fig = px.bar(
+        counts,
+        x='etiqueta',
+        y='count', 
+        title=title, 
+        labels={'etiqueta': xlabel, 'count': 'Frecuencia'},
+        text='count')
+    fig.update_traces(marker_color=['#4CAF50', '#F44336'], textposition='outside')
+    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide', title_x = 0.5)
+    return fig
+
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+def plot_distribucion_box_interactive(df, numeric_cols, bins=30):
+    for col in numeric_cols:
+        mean_val = df[col].mean()
+        median_val = df[col].median()
+        skew_val = df[col].skew()
+
+        fig = make_subplots(
+            rows=1, cols=2,
+            subplot_titles=(f'<b>Distribución de {col}</b>', f'<b>Boxplot de {col}</b>'),
+            horizontal_spacing=0.1,
+            column_widths=[0.6, 0.4]
+        )
+
+        # Histograma
+        fig.add_trace(
+            go.Histogram(
+                x=df[col],
+                nbinsx=bins,
+                name='Frecuencia',
+                marker=dict(color='#4C72B0', line=dict(color='black', width=1)),
+                opacity=0.75,
+                showlegend=False
+            ),
+            row=1, col=1
+        )
+
+        # Líneas en histograma
+        fig.add_vline(
+            x=mean_val,
+            line=dict(color='red', dash='dash', width=2),
+            annotation_text=f'Media = {mean_val:.2f}',
+            annotation_position='top right',
+            row=1, col=1
+        )
+        fig.add_vline(
+            x=median_val,
+            line=dict(color='green', dash='dot', width=2),
+            annotation_text=f'Mediana = {median_val:.2f}',
+            annotation_position='bottom right',
+            row=1, col=1
+        )
+
+        # ================= BOXPLOT MEJORADO =================
+        fig.add_trace(
+            go.Box(
+                x=df[col],
+                name='',
+                marker_color='#55A868',
+                line=dict(color='#2E6B3E', width=2),
+                fillcolor='#B3E0B3',
+                boxmean='sd',
+                boxpoints='outliers',      # muestra outliers
+                jitter=0,                  # sin dispersión horizontal
+                pointpos=0,                # puntos alineados con la caja
+                showlegend=False
+            ),
+            row=1, col=2
+        )
+        # ================================================
+
+        # Anotación de sesgo
+        fig.add_annotation(
+            x=0.95, y=0.85,
+            xref='paper', yref='paper',
+            text=f"Sesgo = {skew_val:.2f}",
+            showarrow=False,
+            font=dict(size=10),
+            bgcolor='white', bordercolor='gray', borderwidth=1, borderpad=4,
+            row=1, col=1
+        )
+
+        # Layout
+        fig.update_layout(
+            title_text=f'<b>Análisis de {col}</b>',
+            title_x=0.5,
+            height=500,
+            showlegend=False,
+            template='plotly_white',
+            margin=dict(t=70, b=50, l=50, r=50)
+        )
+        fig.update_xaxes(title_text=col, row=1, col=1)
+        fig.update_yaxes(title_text="Frecuencia", row=1, col=1)
+        fig.update_xaxes(title_text=col, row=1, col=2)
+        fig.update_yaxes(title_text="", row=1, col=2)
+
+        yield col, fig
 
 # rutas
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,6 +264,8 @@ cm_path = BASE_DIR / "metadata" / "EXP_02_matriz.png"
 data_path = BASE_DIR / "data" / "raw" / "loan_dataset_20000.csv"
 bagging_classifier_path = BASE_DIR / "img" / "BaggingClassifier.png"
 column_transformer_path = BASE_DIR / "img" / "ColumnTransformer.png"
+
+data = pd.read_csv(data_path)
 
 st.set_page_config(
     page_title="Loan Status Prediction",
@@ -45,37 +298,6 @@ with col3:
 # INICIO
 ###########################################################################################################
 if st.session_state.pagina == "Inicio":
-
-    def show_home():
-        # --- Estilos personalizados para tarjetas y sombras ---
-        st.markdown("""
-            <style>
-            .card {
-                background-color: #f8f9fa;
-                border-radius: 15px;
-                padding: 20px;
-                margin: 10px 0;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-                transition: transform 0.2s;
-            }
-            .card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-            }
-            .big-number {
-                font-size: 2.5rem;
-                font-weight: bold;
-                color: #2c3e50;
-            }
-            .metric-label {
-                font-size: 1rem;
-                color: #6c757d;
-            }
-            hr {
-                margin: 1.5rem 0;
-            }
-            </style>
-        """, unsafe_allow_html=True)
 
     # --- Encabezado principal ---
     st.markdown("""
@@ -137,7 +359,7 @@ if st.session_state.pagina == "Inicio":
             </div>
         """, unsafe_allow_html=True)
 
-    data = pd.read_csv(data_path)
+    #data = pd.read_csv(data_path)
     st.dataframe(data.head(10))
     st.info("Dataset original")
 ############################################################################################################################3
@@ -159,79 +381,6 @@ if st.session_state.pagina == "Inicio":
 #####################################################################################################################################3    
 
 
-    def show_data_dictionary():
-        # --- Variables originales ---
-        with st.expander("Variables originales", expanded=False):
-            datos_originales = [
-                ("age", "NUM", "Discretizar (genera age_group)"),
-                ("gender", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
-                ("marital_status", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
-                ("education_level", "CAT_ORD", "OrdinalEncoder"),
-                ("annual_income", "NUM", "log + Normalizar"),
-                ("monthly_income", "NUM", "log + Normalizar"),
-                ("employment_status", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
-                ("debt_to_income_ratio", "NUM", "log + Normalizar"),
-                ("credit_score", "NUM", "Normalizar"),
-                ("loan_amount", "NUM", "Normalizar"),
-                ("loan_purpose", "CAT_NOM", "Encoding + OneHotEncoder (drop first)"),
-                ("interest_rate", "NUM", "Normalizar"),
-                ("loan_term", "CAT_NOM", "OneHotEncoder (drop first)"),
-                ("installment", "NUM", "Normalizar"),
-                ("grade_subgrade", "CAT_ORD", "OrdinalEncoder"),
-                ("num_of_open_accounts", "NUM", "Normalizar"),
-                ("total_credit_limit", "NUM", "log + Normalizar"),
-                ("current_balance", "NUM", "log + Normalizar"),
-                ("delinquency_history", "NUM", "log1p + Normalizar"),
-                ("public_records", "NUM", "Normalizar"),
-                ("num_of_delinquencies", "NUM", "Normalizar"),
-                ("loan_paid_back", "NUM(BIN)", "Objetivo")
-            ]
-            df_original = pd.DataFrame(datos_originales, columns=["Variable", "Tipo", "Tratamiento"])
-            st.dataframe(df_original, width='stretch', hide_index=True)
-
-        # --- Variables finales ---
-        with st.expander("Variables finales (después del pipeline)", expanded=False):
-            datos_finales = [
-                ("age_group", "CAT_ORD", "Grupos: joven, adulto_joven, adulto, adulto_mayor, 3_Edad"),
-                ("marital_status_*", "NUM(BIN)", "4 dummies: Divorced, Widowed, Married, Single"),
-                ("gender_*", "NUM(BIN)", "3 dummies: Male, Female, Other"),
-                ("education_level", "CAT_ORD", "Ordinal (High School → Doctorate)"),
-                ("annual_income", "NUM NORM", "Escalado (log transformado)"),
-                ("monthly_income", "NUM NORM", "Escalado (log transformado)"),
-                ("employment_status_*", "NUM(BIN)", "5 dummies: Unemployed, Retired, Student, Employed, Self-employed"),
-                ("debt_to_income_ratio", "NUM NORM", "Escalado (log transformado)"),
-                ("credit_score", "NUM NORM", "Escalado"),
-                ("loan_amount", "NUM NORM", "Escalado"),
-                ("loan_purpose_*", "NUM(BIN)", "8 dummies: Education, Medical, Home, Car, Other, Business, Vacation, Debt consolidation"),
-                ("interest_rate", "NUM NORM", "Escalado"),
-                ("loan_term_60", "NUM(BIN)", "Dummy (1 si loan_term=60)"),
-                ("installment", "NUM NORM", "Escalado"),
-                ("grade_subgrade", "CAT_ORD", "Ordinal (A1 → G1)"),
-                ("num_of_open_accounts", "NUM NORM", "Escalado"),
-                ("total_credit_limit", "NUM NORM", "Escalado (log transformado)"),
-                ("current_balance", "NUM NORM", "Escalado (log transformado)"),
-                ("delinquency_history", "NUM NORM", "Escalado (log1p transformado)"),
-                ("public_records", "NUM NORM", "Escalado"),
-                ("num_of_delinquencies", "NUM NORM", "Escalado"),
-                ("loan_to_income", "NUM NORM", "Feature: loan_amount - annual_income"),
-                ("has_delinquency_history", "NUM(BIN)", "Feature: (delinquency_history > 0)"),
-                ("severity_score", "NUM NORM", "Feature: num_of_delinquencies + public_records"),
-                ("payment_income", "NUM NORM", "Feature: installment / monthly_income")
-            ]
-            df_final = pd.DataFrame(datos_finales, columns=["Variable", "Tipo", "Descripción"])
-            st.dataframe(df_final, width='stretch', hide_index=True)
-
-        # --- Leyenda visual con columnas (más funcional) ---
-        st.markdown("**Leyenda de tipos**")
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.markdown("🔵 **NUM** - Numérica continua")
-        with col2:
-            st.markdown("🟢 **NUM NORM** - Numérica estandarizada")
-        with col3:
-            st.markdown("🟠 **CAT_ORD** - Categórica ordinal")
-        with col4:
-            st.markdown("🟣 **NUM(BIN)** - Binaria (0/1)")
     show_data_dictionary()
     st.markdown("---")
 
@@ -301,46 +450,38 @@ if st.session_state.pagina == "Inicio":
 ###########################################################################################################
 # ANÁLISIS
 ###########################################################################################################
-elif st.session_state.pagina == "Analisis":
-    st.header("Análisis de datos")
-    st.text('Aquí pongo el EDA')
+elif st.session_state.pagina == "Análisis":
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="color: #1f77b4;">Análisis</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.subheader("Estadísticas descriptivas")
+    st.dataframe(data.describe(include='all').T, use_container_width=True)
+
+    st.subheader("Distribución de la variable objetivo")
+    fig = plot_hist_variable_binaria_interactivo(
+        data,
+        'loan_paid_back', 
+        'Estado del préstamo',
+        'Tipo de pago',
+        'Si pagó', 'No pagó',
+        'Distribución de prestamos pagados')
+    st.plotly_chart(fig, width='content')
+
+    st.subheader("Algunas variables numéricas")
+    numeric_cols = ['age', 'annual_income', 'credit_score', 'total_credit_limit']
+    for col, fig in plot_distribucion_box_interactive(data, numeric_cols, bins=30):
+        st.subheader(f"Análisis de {col}")
+        st.plotly_chart(fig, width='stretch')
 
 ###########################################################################################################
 # APP
 ###########################################################################################################
-elif st.session_state.pagina == "App":
-    
-    def cargar_modelo():
-        '''
-        Cargar el modelo ya hecho en el train.py
-        '''
-        try:
-            MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
 
-            if not MODELO_FILE.exists():
-                st.error(f'Modelo no encontrado en {MODELO_FILE}')
-                return None
-            
-            with st.spinner('Cargando modelo...'):
-                modelo = joblib.load(MODELO_FILE)
-                st.success('Modelo cargado  ')
-                return modelo
-        except Exception as e:
-            st.error(f'Error al cargar el modelo: {str(e)}')
-            return None
+elif st.session_state.pagina == "App":
     modelo = cargar_modelo()
 
-    def alimentar_pipeline(datos_usuario):
-        '''
-        Convertir la información del formulario a una entrada que si acepte el pipeline
-        Args:
-            datos_usuario (dict): Todos los valores que venian en el formulario
-        Outputs:
-            df (pd.DataFrame): DataFrame con los datos del usuario
-        '''
-        df = pd.DataFrame([datos_usuario], index=None)
-        return df
-    
     st.header("App")
     st.text('Aqui van los botones')
-
