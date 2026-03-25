@@ -685,7 +685,7 @@ if st.session_state.pagina == "Inicio":
 
     with col3:
         st.metric("Precision",
-                    f"0.8961",
+                    f"0.8953",
                     delta = 'Mejor modelo')
 
     # --- Descripción del problema y solución en dos columnas ---
@@ -754,7 +754,7 @@ if st.session_state.pagina == "Inicio":
     st.markdown("""
             <div style="text-align: center; margin-bottom: 2rem;">
                 <h2 style="color: #1f77b4;">Modelo final</h2>
-                <p style="color: #6c757d;">EXP_02</p>
+                <p style="color: #6c757d;">EXP_01</p>
             </div>
         """, unsafe_allow_html=True)
     with st.expander("BagginClassifier"):
@@ -793,13 +793,13 @@ if st.session_state.pagina == "Inicio":
     col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
     # Puedes cargar estos valores desde el JSON de metadatos si lo prefieres
     with col_metric1:
-        st.metric("Precisión (Precision)", "0.8961", "medida de interés")
+        st.metric("Precisión (Precision)", "0.8953", "medida de interés")
     with col_metric2:
-        st.metric("Recall", "0.9784", "")
+        st.metric("Recall", "0.9753", "")
     with col_metric3:
-        st.metric("F1-score", "0.9355", "")
+        st.metric("F1-score", "0.9336", "")
     with col_metric4:
-        st.metric("Accuracy", "0.8920", "")
+        st.metric("Accuracy", "0.889", "")
 
 ###########################################################################################################
 # ANÁLISIS
