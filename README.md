@@ -54,14 +54,7 @@ La solución incluye una **arquitectura completamente configurable** mediante ar
 
 ---
 
-## Estructura del Proyecto
-
-
----
-
-
-
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 | Área | Tecnologías |
 |------|-------------|
