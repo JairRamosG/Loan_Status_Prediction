@@ -825,6 +825,14 @@ elif st.session_state.pagina == "Análisis":
     outline_colors=['#2ecc71', '#e74c3c'],  
     hole=0.4)
     st.plotly_chart(fig_custom, key="pie_custom", width='stretch')
+    st.text("El análisis de la variable objetivo revela que el 20% de los préstamos no se pagan, mientras que el 80% restante sí se paga." \
+    " Aunque la clase de impago es minoritaria, representa el mayor riesgo financiero para la entidad. Un modelo que se limite a predecir " \
+    "correctamente la mayoría de los casos (80%) podría fallar justamente en identificar a los solicitantes con mayor probabilidad de " \
+    "incumplimiento. Para evitar este sesgo, se utiliza SMOTE, una técnica que equilibra artificialmente las clases generando ejemplos " \
+    "sintéticos de la clase minoritaria. Esto permite que el modelo se entrene con una representación más equitativa de ambas situaciones," \
+    " enfocándose en aprender los patrones que distinguen a los incumplimientos sin perder precisión en los pagos. El resultado es un " \
+    "modelo más sensible a la clase de interés, capaz de detectar un mayor porcentaje de préstamos en riesgo, lo que se traduce en una " \
+    "mejor gestión del riesgo crediticio y una reducción potencial de pérdidas por incumplimiento.")
 
     st.subheader("Algunas variables numéricas")
     numeric_cols = ['age', 'annual_income', 'credit_score', 'total_credit_limit']
@@ -837,6 +845,10 @@ elif st.session_state.pagina == "Análisis":
             colorscale=paleta   
         )
         st.plotly_chart(fig, key=f"num_{col}", width='stretch')
+    st.text("Para la distribución de la edad se obtuvo que la mediana y la media conicidieron en 48 años, con un rango desde los 21 a los 75 años. Se trata de una distribución aproximadamente simétrica que no tiene ningún sesgo pronunciado. Para esta variable se conservó su escala orinal para realizar un proceso de discretización.")
+    st.text("En la variable annual_income se obtuvo una media de $43,549 y una mediana de $36,585 con un monto máximo de $400,000. Con esta información y el histograma podemos entender el sesgo positivo a la derecha que fue generado. Debido a esto es fue necesario aplicar una transformación logarítmica para tratar de asemejar esta variable a una distribución normal.")
+    st.text("Con la variable credit_score vemos que se tiene una media de 679.3 y una mediana de 680 siendo estas pŕacticamente iguales. Con el histograma nos podemos dar cuenta de que la distribución tiene un comportamiento platicúrtico.")
+    st.text("Pasa algo similar entre la variable annual_income y la variable total_credit_limit en cuestión de sesgo positivo, ya que en esta nueva variable es evidente el sesgo positivo con la media de $48.650 y la mediana de $40,242. Tambien es necesaria la transformación logarítmica.")
 
     st.subheader("Variables según el target")
     for col in numeric_cols:
@@ -849,6 +861,9 @@ elif st.session_state.pagina == "Análisis":
             label_pos="Pagó"
         )
         st.plotly_chart(fig, key=f"boxplot_{col}", width='stretch')
+    st.text("Los boxplots segmentados por la variable objetivo constituyen una herramienta visual de gran utilidad para comprender la distribución de cada variable numérica en función del comportamiento de pago del préstamo. Esta segmentación permite comparar directamente cómo se distribuyen los valores en las clases mayoritaria (pago) y minoritaria (impago), revelando diferencias significativas en la tendencia central, dispersión y presencia de valores atípicos entre ambos grupos.")
+    st.text("Una de las principales ventajas de este enfoque es la capacidad de identificar y caracterizar los valores atípicos (outliers) en cada clase. Estos outliers pueden contener información valiosa sobre casos extremos que podrían estar asociados con perfiles de alto riesgo o, por el contrario, con comportamientos excepcionales de pago. Su análisis permite evaluar si deben ser tratados de manera diferencial o si representan patrones genuinos que el modelo debe aprender.")
+    st.text("Además, los cuartiles calculados en cada boxplot ofrecen una visión detallada de la distribución: el primer cuartil (Q1) y el tercer cuartil (Q3) delimitan el rango intercuartil (IQR), donde se concentra el 50% central de los datos, mientras que la mediana proporciona una medida robusta de tendencia central, menos sensible a valores extremos que la media. La comparación de estos estadísticos entre clases permite identificar variables con mayor poder discriminante.")
 
     
     st.subheader("Distribución de variables categóricas")
@@ -861,6 +876,11 @@ elif st.session_state.pagina == "Análisis":
             show_percentage=True,          
             palette=paleta)
         st.plotly_chart(fig, key=f"categ_{col}", width='stretch')
+    st.text("Estas visualizaciónes nos aportan información importante de las variables categóricas que se eligieron mostrar en este trabajo. Por ejemplo, son de gran ayuda para evidenciar la composición de perfiles de los solicitantes de prestamos con la variable de employment_status, en donde se observa que la gran mayoría estan compuestos por personas que tienen un empleo fijo con el 65% del total. Las demás categorías son significativamente menores pero no es recomendable agruparlas en una clase diferente debido a la gran difetencia del contexto en el que se encuentran.")
+    st.text("Con la variable marital_stauts nos podemos dar cuenta que las personas soleras o casadas son las que en su gran mayoría piden prestamos con cerca el 90% del total. La situación de personas que enviudaron o pasaron por un proceso de divorcio podría hablar de posibles problemas financieros que influirían en el pago de los prestamos.")
+    st.text("La distribución de perfiles académicos obtenidos con la variable education_level nos ayudan a comprender que mientras más alto es el grado de estucios de una persona, es menos común que sea cliente de un servicio de prestamos. Esto puede estar relacionado con el tipo de empleo e ingresos con los que cuenta. Por otra parte, es evidente que las personas con un menor grado de estudios son las que más solicitan este tipo de servicios.")
+    st.text("La variable loan_purpose nos muestra que cerca del 40% de los clientes solicitan más prestamos para unificar múltiples deudas en una sola, ya que al hacer esto generalmente obtienen mejores condiciones de pago y es una práctica común en plataformas de crédito personal. Esto tambien puede sugerir que los solicitantes de este conjunto de datos tienen un perfil de endeudamiento previo y por o tanto, estar asociados a un mayor riesgo de incuplimiento en pagos.")
+
 
     st.subheader("Proporción de pago por variables")
     for col in categoric_cols:
@@ -876,7 +896,8 @@ elif st.session_state.pagina == "Análisis":
             theme='plotly_white'
         )
         st.plotly_chart(fig, key=f"crosstab_{col}", width='stretch')
-
+    st.text("Esta visualización es la que nos ayuda a entender cuáles son los perfiles con un mayor riesgo de incumplimiento de acuerso a la variable employment_status. Con las proporciónes de pago por variables se puede observar que casi el 82% de las personas desempleadas no tienen cumplimiento con el pago de sus prestamos, además, el perfil de estudiantes también representa un alto riesgo con un 59.3% de incumplimiento. Lo que pueden llegar a tener en común estos dos perfiles es la ausencia de un ingreso económico fijo. Por otra parte, es casi seguro que una persona retirada, que generalmente son de mayor edad y con una posisción económica más estable, si cumpla con el pago de su deuda con el 99.5% de los casos.")
+    st.text("Las otras variables no arrojan tanta información de la misma manera. De hecho, es posible observar que en el resto de variables, la proporción de incumplimiento fluctúa muy cerca del 20% en incumplimientos, lo cuál es lo repostado en la gráfica de pastel en el inicio del análisis en el caso general de todos los registros de personas presentes en el conjunto de datos.")
 ###########################################################################################################
 # MODELO
 ###########################################################################################################
