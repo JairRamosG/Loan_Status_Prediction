@@ -264,6 +264,6 @@ def train_model(config_file):
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent.parent
-    CONFIG_FILE = BASE_DIR / 'config' / '02_experimento.yaml'
+    CONFIG_FILE = BASE_DIR / 'config' / '01_experimento.yaml'
     train_model(str(CONFIG_FILE))
 

@@ -152,3 +152,46 @@
 2026-03-22 16:53:31,778 - INFO - Metadatos registrados correctamente
 2026-03-22 16:53:36,757 - INFO - Modelo EXP_01 guardado exitosamente
 2026-03-22 16:53:36,759 - INFO - Metadatos registrados exitosamente
+2026-03-25 00:17:50,074 - INFO - Iniciando con el experimento EXP_01
+2026-03-25 00:17:50,136 - INFO - Datos cargados correctamente
+2026-03-25 00:17:50,154 - INFO - Validación del conjunto de datos realizada
+2026-03-25 00:17:50,154 - INFO - 	X_train: (16000, 21)
+2026-03-25 00:17:50,154 - INFO - 	X_test : (4000, 21)
+2026-03-25 00:17:50,154 - INFO - 	y_train: (16000,)
+2026-03-25 00:17:50,154 - INFO - 	y_test : (4000,)
+2026-03-25 00:17:50,154 - INFO - Columnas cargadas del archivo de configuración:
+2026-03-25 00:17:50,154 - INFO - 	0	 Ignoradas
+2026-03-25 00:17:50,154 - INFO - 	14	 Numericas
+2026-03-25 00:17:50,154 - INFO - 	2	 Categoricas ordinales
+2026-03-25 00:17:50,154 - INFO - 	5	 Categoricas nominales ohe drop
+2026-03-25 00:17:50,154 - INFO - 	0	 Categoricas nominales ohe
+2026-03-25 00:17:50,154 - INFO - 	0	 Categoricas nominales freq ohe
+2026-03-25 00:17:50,155 - INFO - Pipeline construido exitosamente
+2026-03-25 00:17:50,155 - INFO - Pasos: ['feature_engineering', 'preprocessor', 'smote', 'model']
+2026-03-25 00:17:50,155 - INFO - Configuración de CV:
+2026-03-25 00:17:50,155 - INFO -    Tipo: RandomizedSearchCV
+2026-03-25 00:17:50,155 - INFO -    n_iter: 30
+2026-03-25 00:17:50,155 - INFO -    scoring: precision
+2026-03-25 00:17:50,155 - INFO -    cv_folds: 3
+2026-03-25 00:17:50,155 - INFO -    n_jobs: -1
+2026-03-25 00:17:50,155 - INFO -    verbose: 1
+2026-03-25 00:17:50,155 - INFO -    error_score: raise
+2026-03-25 00:17:50,155 - INFO - Inicio del entrenamiento
+2026-03-25 01:03:57,237 - INFO - Final del entrenamiento en: 0:46:07.081555
+2026-03-25 01:03:57,237 - INFO - Mejores parámetros:
+2026-03-25 01:03:57,237 - INFO -           model__n_jobs: -1
+2026-03-25 01:03:57,237 - INFO -           model__n_estimators: 500
+2026-03-25 01:03:57,237 - INFO -           model__max_samples: 0.5
+2026-03-25 01:03:57,237 - INFO -           model__estimator__n_estimators: 30
+2026-03-25 01:03:57,238 - INFO -           model__estimator__min_samples_split: 20
+2026-03-25 01:03:57,238 - INFO -           model__estimator__max_leaf_nodes: 20
+2026-03-25 01:03:57,238 - INFO -           model__estimator__max_features: sqrt
+2026-03-25 01:03:57,238 - INFO -           model__bootstrap: True
+2026-03-25 01:03:57,238 - INFO - Mejor score:  0.8948
+2026-03-25 01:03:57,238 - INFO - Mejor modelo obtenido del RandomizedSearchCV
+2026-03-25 01:11:18,337 - INFO - Probabilidades obtenidas correctamente
+2026-03-25 01:11:18,467 - INFO - Matriz de confusión guardada exitosamente
+2026-03-25 01:11:18,483 - INFO - Medidas de desempeño guardadas exitosamente
+2026-03-25 01:11:18,486 - INFO - Metadatos registrados correctamente
+2026-03-25 01:11:23,431 - INFO - Modelo EXP_01 guardado exitosamente
+2026-03-25 01:11:23,433 - INFO - Metadatos registrados exitosamente
