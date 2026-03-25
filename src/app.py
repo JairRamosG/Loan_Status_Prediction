@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
 
-paleta = 'Magma' ### 'Plasma', 'Inferno', 'Magma', 'YlGnBu', 'viridis', 'Turbo', 'plotly3', 'Pastel1'
+paleta = 'Magma' 
 
 # INICIO
 def show_home():
@@ -584,12 +584,13 @@ def plot_crosstab_single(
 
 
 # APP
+@st.cache_resource
 def cargar_modelo():
     '''
     Cargar el modelo ya hecho en el train.py
     '''
     try:
-        MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
+        MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_01.pkl"
 
         if not MODELO_FILE.exists():
             st.error(f'Modelo no encontrado en {MODELO_FILE}')
@@ -616,14 +617,17 @@ def alimentar_pipeline(datos_usuario):
 
 # rutas
 BASE_DIR = Path(__file__).resolve().parent.parent
-learning_curve_path = BASE_DIR / "metadata" / "EXP_02_learning_curve.png"
-cm_path = BASE_DIR / "metadata" / "EXP_02_matriz.png"
+learning_curve_path = BASE_DIR / "metadata" / "EXP_01_learning_curve.png"
+cm_path = BASE_DIR / "metadata" / "EXP_01_matriz.png"
 data_path = BASE_DIR / "data" / "raw" / "loan_dataset_20000.csv"
 bagging_classifier_path = BASE_DIR / "img" / "BaggingClassifier.png"
 column_transformer_path = BASE_DIR / "img" / "ColumnTransformer.png"
 umbral_path = BASE_DIR / 'img' / 'umbral.png'
 
-data = pd.read_csv(data_path)
+@st.cache_data
+def cargar_datos():
+    return pd.read_csv(data_path)
+data = cargar_datos()
 
 st.set_page_config(
     page_title="Loan Status Prediction",
