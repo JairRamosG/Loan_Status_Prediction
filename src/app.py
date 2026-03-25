@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
 
-paleta = 'viridis' # 'Plasma', 'Inferno', 'Magma', 'YlGnBu', 'viridis', 'Turbo', 'plotly3', 'Pastel1'
+paleta = 'Magma' ### 'Plasma', 'Inferno', 'Magma', 'YlGnBu', 'viridis', 'Turbo', 'plotly3', 'Pastel1'
 
 # INICIO
 def show_home():
@@ -122,36 +122,6 @@ def show_data_dictionary():
     with col4:
         st.markdown("🟣 **NUM(BIN)** - Binaria (0/1)")
 
-# APP
-def cargar_modelo():
-    '''
-    Cargar el modelo ya hecho en el train.py
-    '''
-    try:
-        MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
-
-        if not MODELO_FILE.exists():
-            st.error(f'Modelo no encontrado en {MODELO_FILE}')
-            return None
-        
-        with st.spinner('Cargando modelo...'):
-            modelo = joblib.load(MODELO_FILE)
-            st.success('Modelo cargado  ')
-            return modelo
-    except Exception as e:
-        st.error(f'Error al cargar el modelo: {str(e)}')
-        return None
-
-def alimentar_pipeline(datos_usuario):
-    '''
-    Convertir la información del formulario a una entrada que si acepte el pipeline
-    Args:
-        datos_usuario (dict): Todos los valores que venian en el formulario
-    Outputs:
-        df (pd.DataFrame): DataFrame con los datos del usuario
-    '''
-    df = pd.DataFrame([datos_usuario], index=None)
-    return df
 
 # ANÁLISIS
 def plot_pie_binaria(
@@ -613,6 +583,37 @@ def plot_crosstab_single(
     return fig
 
 
+# APP
+def cargar_modelo():
+    '''
+    Cargar el modelo ya hecho en el train.py
+    '''
+    try:
+        MODELO_FILE = Path(__file__).parent.parent / "models" / "EXP_02.pkl"
+
+        if not MODELO_FILE.exists():
+            st.error(f'Modelo no encontrado en {MODELO_FILE}')
+            return None
+        
+        with st.spinner('Cargando modelo...'):
+            modelo = joblib.load(MODELO_FILE)
+            st.success('Modelo cargado  ')
+            return modelo
+    except Exception as e:
+        st.error(f'Error al cargar el modelo: {str(e)}')
+        return None
+
+def alimentar_pipeline(datos_usuario):
+    '''
+    Convertir la información del formulario a una entrada que si acepte el pipeline
+    Args:
+        datos_usuario (dict): Todos los valores que venian en el formulario
+    Outputs:
+        df (pd.DataFrame): DataFrame con los datos del usuario
+    '''
+    df = pd.DataFrame([datos_usuario], index=None)
+    return df
+
 # rutas
 BASE_DIR = Path(__file__).resolve().parent.parent
 learning_curve_path = BASE_DIR / "metadata" / "EXP_02_learning_curve.png"
@@ -620,6 +621,7 @@ cm_path = BASE_DIR / "metadata" / "EXP_02_matriz.png"
 data_path = BASE_DIR / "data" / "raw" / "loan_dataset_20000.csv"
 bagging_classifier_path = BASE_DIR / "img" / "BaggingClassifier.png"
 column_transformer_path = BASE_DIR / "img" / "ColumnTransformer.png"
+umbral_path = BASE_DIR / 'img' / 'umbral.png'
 
 data = pd.read_csv(data_path)
 
@@ -648,8 +650,8 @@ with col2:
         st.session_state.pagina = "Análisis"
 
 with col3:
-    if st.button("App", width='stretch'):
-        st.session_state.pagina = "App"
+    if st.button("Modelo", width='stretch'):
+        st.session_state.pagina = "Modelo"
 
 ###########################################################################################################
 # INICIO
@@ -795,15 +797,6 @@ if st.session_state.pagina == "Inicio":
     with col_metric4:
         st.metric("Accuracy", "0.8920", "")
 
-    # --- Créditos finales ---
-    st.markdown("---")
-    st.markdown("""
-        <div style="text-align: center; color: #9e9e9e; padding: 1rem;">
-            <strong>Jair Ramos</strong> · 
-            Repositorio en <a href="https://github.com/JairRamosG/Loan_Status_Prediction" target="_blank">GitHub</a> · 
-        </div>
-    """, unsafe_allow_html=True)
-
 ###########################################################################################################
 # ANÁLISIS
 ###########################################################################################################
@@ -827,7 +820,7 @@ elif st.session_state.pagina == "Análisis":
     colors=[ '#1e6e43', '#7a2e29'],          
     outline_colors=['#2ecc71', '#e74c3c'],  
     hole=0.4)
-    st.plotly_chart(fig_custom, key="pie_custom", use_container_width=True)
+    st.plotly_chart(fig_custom, key="pie_custom", width='stretch')
 
     st.subheader("Algunas variables numéricas")
     numeric_cols = ['age', 'annual_income', 'credit_score', 'total_credit_limit']
@@ -855,7 +848,7 @@ elif st.session_state.pagina == "Análisis":
 
     
     st.subheader("Distribución de variables categóricas")
-    categoric_cols = ['gender', 'marital_status', 'education_level', 'loan_purpose']
+    categoric_cols = ['employment_status', 'marital_status', 'education_level', 'loan_purpose']
 
     for col in categoric_cols:
         fig = plot_categorical(
@@ -878,14 +871,299 @@ elif st.session_state.pagina == "Análisis":
             outline_colors=['#e74c3c', '#2ecc71'],  
             theme='plotly_white'
         )
-        st.plotly_chart(fig, key=f"crosstab_{col}", use_container_width=True)
+        st.plotly_chart(fig, key=f"crosstab_{col}", width='stretch')
 
 ###########################################################################################################
-# APP
+# MODELO
 ###########################################################################################################
 
-elif st.session_state.pagina == "App":
+elif st.session_state.pagina == "Modelo":
     modelo = cargar_modelo()
 
-    st.header("App")
-    st.text('Aqui van los botones')
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="color: #1f77b4;">Ingrese los datos para implementar el modelo</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.subheader("Información personal")
+
+        # age
+        age = st.number_input(
+            '***Edad***',
+            min_value = 18,
+            max_value = 100,
+            value = 30,
+            step = 1)
+
+        # gender
+        gender = st.radio(
+            '***Género***',
+            ['Male',
+            'Female',
+            'Other'],
+            index = None)
+
+        # marital_status
+        marital_status = st.radio(
+            '***Estado Civil***',
+            ['Single',
+            'Married',
+            'Divorced', 
+            'Widowed'],
+            index = None)
+
+        # education_level
+        education_level = st.radio(
+            '***Nivel de educación***',
+            ["Bachelor's",
+            'High School',
+            "Master's",
+            'PhD',
+            'Other'],
+            index = None)
+
+        # annual_income
+        annual_income = st.slider(
+            '***Ingreso anual***',
+            min_value = 5000,
+            max_value = 500000,
+            value = 30000,
+            step = 1)
+
+        # monthly_income
+        monthly_income = annual_income / 12
+
+        # employment_status
+        employment_status = st.selectbox(
+            '***Ocupación***',
+            options = ['Employed',
+                    'Self-employed',
+                    'Unemployed',
+                    'Retired',
+                    'Student'])
+
+    with c2:
+        st.subheader("Información financiera")
+
+        # debt_to_income_ratio
+        debt_to_income_ratio = st.number_input(
+            '***Ratio deuda / ingreso***',
+            min_value = 0.01,
+            max_value = 0.7,
+            value = 0.1,
+            step = 0.01)
+        
+        # credit_score
+        credit_score = st.slider(
+            '***Score crediticio***',
+            min_value = 300,
+            max_value = 850,
+            value = 550,
+            step = 1)
+
+        # loan_amount
+        loan_amount = st.number_input(
+            '***Cantidad del prestamo***',
+            min_value = 500,
+            max_value = 50000,
+            value = 1000,
+            step = 1)
+        
+        # loan_purpose
+        loan_purpose = st.selectbox(
+            '***Propósito del prestamo***',
+            options = ['Debt consolidation',
+                    'Car',
+                    'Home',
+                    'Education',
+                    'Business',
+                    'Medical',
+                    'Vacation',
+                    'Other'])
+        
+        # interest_rate
+        interest_rate = st.number_input(
+            '***Tasa de interés***',
+            min_value = 3.14,
+            max_value = 21.0,
+            value = 12.0,
+            step = 0.01)
+        
+        # loan_term
+        loan_term= st.radio(
+            '***Plazo a meses***',
+            options = [36, 60])
+
+        # installment
+        installment = st.number_input(
+            '***Pagos a plazos***',
+            min_value = 9.0,
+            max_value = 1690.0,
+            value = 270.0,
+            step = 0.1)
+        
+        # grade_subgrade
+        grade_subgrade = st.selectbox(
+            '***Calificación Crediticia***',
+            options = ['A1',
+                    'A2',
+                    'A3',
+                    'A4',
+                    'A5',
+                    'B1',
+                    'B2',
+                    'B3',
+                    'B4',
+                    'B5',
+                    'C1',
+                    'C2',
+                    'C3',
+                    'C4',
+                    'C5',
+                    'D1',
+                    'D2',
+                    'D3',
+                    'D4',
+                    'D5',
+                    'E1',
+                    'E2',
+                    'E3',
+                    'E4',
+                    'E5',
+                    'F1',
+                    'F2',
+                    'F3',
+                    'F4',
+                    'F5',])
+        
+        # num_of_open_accounts
+        num_of_open_accounts = st.number_input(
+            '***Cuentas abiertas***',
+            min_value = 0,
+            max_value = 15,
+            value = 1,
+            step = 1)
+        
+        # total_credit_limit
+        total_credit_limit = st.number_input(
+            '***Límite de Crédito***',
+            min_value = 6100.0,
+            max_value = 450000.0,
+            value = 50000.0,
+            step = 1.0)
+        
+        # current_balance
+        current_balance = st.number_input(
+            '***Saldo Actual***',
+            min_value = 450,
+            max_value = 355000,
+            value = 25000,
+            step = 1)
+        
+    with c3:
+        st.subheader("Pagos atrasados y morosidad")
+        # delinquency_history
+        delinquency_history = st.number_input(
+            '***Historial de morosidad***',
+            min_value = 0,
+            max_value = 11,
+            value = 0,
+            step = 1)
+        
+        # public_records
+        public_records = st.selectbox(
+            '***Registros publicos***',
+            options = [0, 1, 2])
+        
+        # num_of_delinquencies
+        num_of_delinquencies = st.number_input(
+            '***Número de veces con morosidad***', 
+            min_value = 0,
+            max_value = 11,
+            value = 0,
+            step = 1)
+        
+        st.image(umbral_path, caption = "Umbral de desición", width='stretch')
+        
+        umbral = st.slider(
+            '***Umbral para tomar la desición***',
+            min_value = 10, 
+            max_value = 90, 
+            value = 50, 
+            step = 1,
+            help = "Bajarlo haría la predicción mas sensible y aumentarían los FP," \
+            " subirlo haría la predicción más confiable pero aumentarían los FN")
+        
+        
+        
+    if modelo is not None:
+        try:
+            campos_requeridos = {
+                'age': age,
+                'gender' : gender,
+                'marital_status' : marital_status,
+                'education_level' : education_level,
+                'annual_income' : annual_income,
+                'monthly_income' : monthly_income,
+                'employment_status' : employment_status,
+                'debt_to_income_ratio': debt_to_income_ratio,
+                'credit_score' : credit_score,
+                'loan_amount' : loan_amount,
+                'loan_purpose' : loan_purpose,
+                'interest_rate' : interest_rate,
+                'loan_term' : loan_term,
+                'installment' : installment,
+                'grade_subgrade' : grade_subgrade,
+                'num_of_open_accounts' : num_of_open_accounts,
+                'total_credit_limit' : total_credit_limit,
+                'current_balance' : current_balance,
+                'delinquency_history' : delinquency_history,
+                'public_records' : public_records,
+                'num_of_delinquencies' : num_of_delinquencies}
+            
+            # Verificar campos vacíos
+            campos_vacios = [k for k, v in campos_requeridos.items() if v is None or v == '']
+            if campos_vacios:
+                st.error(f"Por favor completa los siguientes campos: {', '.join(campos_vacios)}")
+                st.stop()
+        
+            # Construir diccionario sin loan_paid_back
+            datos_usuario = campos_requeridos
+            df = alimentar_pipeline(datos_usuario)       
+
+            st.markdown("---")
+            st.header("Predicción")
+
+            # PREDICCIÓN
+            if hasattr(modelo, 'predict_proba'):
+                probabilidad = np.round(modelo.predict_proba(df)[0][1], 4)
+                pred = 1 if probabilidad >= (umbral/100) else 0
+                tabla_resultados = pd.DataFrame({
+                    'Probabilidad de no pago' : [f"{1-probabilidad:.1%}"],
+                    'Probabilidad de pago': [f"{probabilidad}"],
+                    'Predicción' : ['Si Paga' if pred == 1 else 'No Paga']
+                    })
+                st.dataframe(tabla_resultados, hide_index = True)
+            else:
+                pred = modelo.predict(df)[0]
+                probabilidad = None
+                if pred == 1:
+                    st.error('Potencial riesgo de que el usuario no pague')
+                else:
+                    st.success('Existe menor riesgo de que el usuario no pague')
+
+        except Exception as e:
+            st.error(f'Error leyedo los datos: {str(e)}')
+
+
+# --- Créditos finales ---
+st.markdown("---")
+st.markdown("""
+    <div style="text-align: center; color: #9e9e9e; padding: 1rem;">
+        <strong>Jair Ramos</strong> · 
+        Repositorio en <a href="https://github.com/JairRamosG/Loan_Status_Prediction" target="_blank">GitHub</a> · 
+    </div>
+""", unsafe_allow_html=True)
