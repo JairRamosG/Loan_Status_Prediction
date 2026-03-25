@@ -1097,66 +1097,97 @@ elif st.session_state.pagina == "Modelo":
             help = "Bajarlo haría la predicción mas sensible y aumentarían los FP," \
             " subirlo haría la predicción más confiable pero aumentarían los FN")
         
+    # Botón para ejecutar la predicción
+    if st.button("Realizar predicción", type="primary",  width='stretch'):
         
-        
-    if modelo is not None:
-        try:
-            campos_requeridos = {
-                'age': age,
-                'gender' : gender,
-                'marital_status' : marital_status,
-                'education_level' : education_level,
-                'annual_income' : annual_income,
-                'monthly_income' : monthly_income,
-                'employment_status' : employment_status,
-                'debt_to_income_ratio': debt_to_income_ratio,
-                'credit_score' : credit_score,
-                'loan_amount' : loan_amount,
-                'loan_purpose' : loan_purpose,
-                'interest_rate' : interest_rate,
-                'loan_term' : loan_term,
-                'installment' : installment,
-                'grade_subgrade' : grade_subgrade,
-                'num_of_open_accounts' : num_of_open_accounts,
-                'total_credit_limit' : total_credit_limit,
-                'current_balance' : current_balance,
-                'delinquency_history' : delinquency_history,
-                'public_records' : public_records,
-                'num_of_delinquencies' : num_of_delinquencies}
-            
-            # Verificar campos vacíos
-            campos_vacios = [k for k, v in campos_requeridos.items() if v is None or v == '']
-            if campos_vacios:
-                st.error(f"Por favor completa los siguientes campos: {', '.join(campos_vacios)}")
-                st.stop()
-        
-            # Construir diccionario sin loan_paid_back
-            datos_usuario = campos_requeridos
-            df = alimentar_pipeline(datos_usuario)       
+        if modelo is not None:
+            try:
+                # Validar campos requeridos
+                campos_requeridos = {
+                    'age': age,
+                    'gender': gender,
+                    'marital_status': marital_status,
+                    'education_level': education_level,
+                    'annual_income': annual_income,
+                    'monthly_income': monthly_income,
+                    'employment_status': employment_status,
+                    'debt_to_income_ratio': debt_to_income_ratio,
+                    'credit_score': credit_score,
+                    'loan_amount': loan_amount,
+                    'loan_purpose': loan_purpose,
+                    'interest_rate': interest_rate,
+                    'loan_term': loan_term,
+                    'installment': installment,
+                    'grade_subgrade': grade_subgrade,
+                    'num_of_open_accounts': num_of_open_accounts,
+                    'total_credit_limit': total_credit_limit,
+                    'current_balance': current_balance,
+                    'delinquency_history': delinquency_history,
+                    'public_records': public_records,
+                    'num_of_delinquencies': num_of_delinquencies
+                }
+                
+                # Verificar campos vacíos
+                campos_vacios = [k for k, v in campos_requeridos.items() if v is None or v == '']
+                if campos_vacios:
+                    st.error(f"Por favor completa los siguientes campos: {', '.join(campos_vacios)}")
+                    st.stop()
+                
+                # Construir diccionario con los datos del usuario
+                datos_usuario = campos_requeridos
+                df = alimentar_pipeline(datos_usuario)
+                
+                # Mostrar spinner mientras se realiza la predicción
+                with st.spinner('Analizando información...'):
+                    # PREDICCIÓN
+                    if hasattr(modelo, 'predict_proba'):
+                        probabilidad = np.round(modelo.predict_proba(df)[0][1], 4)
+                        pred = 1 if probabilidad >= (umbral / 100) else 0
+                        
+                        # Mostrar resultados
+                        st.markdown("---")
+                        st.header("Resultado de la predicción")
+                        
+                        # Tarjetas con métricas
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric(
+                                label="Probabilidad de pago",
+                                value=f"{probabilidad:.1%}",
+                                delta="Alta" if pred == 1 else "Baja",
+                                delta_color="normal" if pred == 1 else "inverse"
+                            )
+                        with col2:
+                            st.metric(
+                                label="Probabilidad de no pago",
+                                value=f"{1-probabilidad:.1%}",
+                                delta="Riesgo" if pred == 0 else "Bajo",
+                                delta_color="inverse" if pred == 0 else "normal"
+                            )
+                        with col3:
+                            if pred == 1:
+                                st.success("**Recomendación: APROBAR**")
+                                st.caption("El préstamo tiene alta probabilidad de ser pagado")
+                            else:
+                                st.error("**Recomendación: RECHAZAR**")
+                                st.caption("El préstamo presenta alto riesgo de impago")
 
-            st.markdown("---")
-            st.header("Predicción")
-
-            # PREDICCIÓN
-            if hasattr(modelo, 'predict_proba'):
-                probabilidad = np.round(modelo.predict_proba(df)[0][1], 4)
-                pred = 1 if probabilidad >= (umbral/100) else 0
-                tabla_resultados = pd.DataFrame({
-                    'Probabilidad de no pago' : [f"{1-probabilidad:.1%}"],
-                    'Probabilidad de pago': [f"{probabilidad}"],
-                    'Predicción' : ['Si Paga' if pred == 1 else 'No Paga']
-                    })
-                st.dataframe(tabla_resultados, hide_index = True)
-            else:
-                pred = modelo.predict(df)[0]
-                probabilidad = None
-                if pred == 1:
-                    st.error('Potencial riesgo de que el usuario no pague')
-                else:
-                    st.success('Existe menor riesgo de que el usuario no pague')
-
-        except Exception as e:
-            st.error(f'Error leyedo los datos: {str(e)}')
+                            
+                    else:
+                        pred = modelo.predict(df)[0]
+                        st.markdown("---")
+                        st.header("Resultado de la predicción")
+                        
+                        if pred == 1:
+                            st.success("**El préstamo tiene alta probabilidad de ser pagado**")
+                            st.balloons()
+                        else:
+                            st.error("**El préstamo presenta alto riesgo de impago**")
+                    
+            except Exception as e:
+                st.error(f'Error procesando los datos: {str(e)}')
+        else:
+            st.error("El modelo no está disponible. Por favor, contacta al administrador.")
 
 
 # --- Créditos finales ---
