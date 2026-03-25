@@ -121,7 +121,7 @@ La solución incluye una **arquitectura completamente configurable** mediante ar
 
 ## Trabajo a Futuro
 
-Con el objetivo de mejorar este trabajo, se plantean las siguientes líneas de trabajo:
+Con el objetivo de mejorar este trabajo, se plantean las siguientes líneas de cambio:
 
 ### Mejoras en el Modelado
 
