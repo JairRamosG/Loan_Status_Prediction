@@ -7,3 +7,4 @@ scikit-learn==1.6.1
 imbalanced-learn==0.13.0
 plotly==6.6.0
 joblib==1.5.1
+gdown==5.2.0
