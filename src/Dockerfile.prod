@@ -1,0 +1,24 @@
+# 1. Usa una imagen base oficial de Python
+FROM python:3.11-slim
+
+# 2. Establece el directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# 3. Copia solo el archivo de dependencias primero (mejora la caché de Docker)
+COPY requirements.txt .
+
+# 4. Instala las dependencias del sistema (mínimas, sin OpenCV)
+RUN apt-get update && apt-get install -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# 5. Instala las dependencias de Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 6. Copia TODO el resto del código y archivos del proyecto
+COPY . .
+
+# 7. Expone el puerto estándar que usa Streamlit
+EXPOSE 8501
+
+# 8. Define el comando para ejecutar la aplicación
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
