@@ -1,0 +1,18 @@
+# 1. Usa una imagen base oficial de Python
+FROM python:3.11-slim
+
+# 2. Establece el directorio 
+WORKDIR /app
+
+# 3. Copia solo el archivo de dependencias 
+COPY requirements.txt .
+
+# 4. Instala las dependencias de Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Copia TODO el resto del código y archivos del proyecto
+COPY . .
+
+# 6. Ejecuta Streamlit apuntando hacia src/app.py
+EXPOSE 8501
+CMD ["streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
